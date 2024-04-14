@@ -43,6 +43,42 @@ public class Usuario {
 
     }
 
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public Integer getFkEmpresa() {
+        return fkEmpresa;
+    }
+
     @Override
     public String toString() {
         return """
@@ -57,4 +93,5 @@ public class Usuario {
                 fkEmpresa: %d
                 """.formatted(idUsuario, nome, endereco, telefone, cargo, email, senha, cpf, fkEmpresa);
     }
+
 }

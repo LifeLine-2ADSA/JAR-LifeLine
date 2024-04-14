@@ -42,7 +42,15 @@ public class Conversor {
         String string = fmt.format(valorDouble);
         String[] part = string.split("[,]");
         String string2 = part[0]+"."+part[1];
-        Double preco = Double.parseDouble(string2);
-        return preco;
+        Double valor = Double.parseDouble(string2);
+        return valor;
+    }
+    public static Double converterDoubleTresDecimais(Double valorDouble) {
+        DecimalFormat fmt = new DecimalFormat("0.000");
+        String string = fmt.format(valorDouble);
+        String[] part = string.split("[,]");
+        String string2 = part[0]+"."+part[1];
+        Double valor = Double.parseDouble(string2);
+        return valor;
     }
 }
