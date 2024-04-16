@@ -37,11 +37,11 @@ public class Registro {
         this.totalDispositivos = looca.getDispositivosUsbGrupo().getTotalDispositvosUsbConectados();
     }
 
-    public void inserirRegistros(Integer fkUsuario) {
+    public void inserirRegistros(Integer fkUsuario, String macAddress) {
 
         try {
-            String query = "SELECT idMaquina FROM maquina WHERE fkUsuario = ?";
-            conec.queryForObject(query, new Object[]{fkUsuario}, (resposta, indice) -> {
+            String query = "SELECT idMaquina FROM maquina WHERE fkUsuario = ? AND macAddress = ?";
+            conec.queryForObject(query, new Object[]{fkUsuario, macAddress}, (resposta, indice) -> {
                 Integer idMaquina = resposta.getInt(1);
 
                 permanenciaDeDados.schedule(new TimerTask() {

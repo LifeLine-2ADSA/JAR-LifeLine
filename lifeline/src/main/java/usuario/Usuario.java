@@ -36,9 +36,8 @@ public class Usuario {
                 this.fkEmpresa = resposta.getInt(9);
                 return null;
             });
-            System.out.println("Logay");
         } catch (EmptyResultDataAccessException e) {
-            System.out.println("Não Logay");
+            System.out.println("Email ou senha incorretos");
         }
 
     }

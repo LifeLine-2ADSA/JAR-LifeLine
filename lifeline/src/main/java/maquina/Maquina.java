@@ -1,13 +1,11 @@
 package maquina;
 
 import com.github.britooo.looca.api.core.Looca;
-import com.github.britooo.looca.api.group.discos.DiscoGrupo;
-import com.github.britooo.looca.api.group.discos.Volume;
-import com.github.britooo.looca.api.group.memoria.Memoria;
-import com.github.britooo.looca.api.group.processador.Processador;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import conexao.Conexao;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.ArrayList;
@@ -17,7 +15,6 @@ public class Maquina {
     Conexao conectar = new Conexao();
     JdbcTemplate conec = conectar.getConexao();
     Looca looca = new Looca();
-    private Integer idMaquina;
     private String macAddress;
     private String ip;
     private String sistemaOperacional;
@@ -28,6 +25,7 @@ public class Maquina {
     public Maquina() {
         List<RedeInterface> listaRede = looca.getRede().getGrupoDeInterfaces().getInterfaces().stream().filter(redeInterface -> !redeInterface.getEnderecoIpv4().isEmpty()).toList();
 
+        this.macAddress = listaRede.get(0).getEnderecoMac();
         this.ip = listaRede.get(0).getEnderecoIpv4().get(0);
         this.sistemaOperacional = looca.getSistema().getSistemaOperacional();
         this.maxCpu = Conversor.converterFrequencia(looca.getProcessador().getFrequencia());
@@ -35,15 +33,10 @@ public class Maquina {
         this.maxDisco = Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getGrupoDeDiscos().getTamanhoTotal()));
     }
 
-    public void cadastrarMaquina(String email, String nome, Integer idUsuario) {
-        Maquina maquina = new Maquina();
+    public void cadastrarMaquina(String nome, Integer idUsuario) {
         try {
-            conec.queryForObject("SELECT m.idMaquina FROM maquina m JOIN usuario u ON m.fkUsuario = u.idUsuario WHERE u.email = ? and m.nome = ?", Integer.class, email, nome);
-
-            System.out.println("Você já cadastrou as informações do hardware no sistema!");
-        } catch (EmptyResultDataAccessException e) {
-            conec.update("INSERT INTO maquina (nome, ip, sistemaOperacional, maxCpu, maxRam, maxDisco, fkUsuario) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    nome, maquina.getIp(), maquina.getSistemaOperacional(), maquina.getMaxCpu(), maquina.getMaxRam(), maquina.getMaxDisco(), idUsuario);
+            conec.update("INSERT INTO maquina (nome, ip, macAddress, sistemaOperacional, maxCpu, maxRam, maxDisco, fkUsuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    nome, getIp(), getMacAddress(), getSistemaOperacional(), getMaxCpu(), getMaxRam(), getMaxDisco(), idUsuario);
             conec.update("""
                     INSERT INTO limitador (fkMaquina, limiteCpu, limiteRam, limiteDisco)
                                         SELECT
@@ -51,10 +44,28 @@ public class Maquina {
                                             maxCpu * 0.8,  -- Reduzindo o limite de CPU em 20%
                                             maxRam * 0.8,  -- Reduzindo o limite de RAM em 20%
                                             maxDisco * 0.8  -- Reduzindo o limite de disco em 20%
-                                        FROM maquina where fkUsuario = ? ORDER BY idMaquina DESC limit 1
-                    """, idUsuario);
-            System.out.println("Cadastrey");
+                                        FROM maquina where fkUsuario = ? AND macAddress = ?
+                    """, idUsuario, macAddress);
+        } catch (DataAccessException e) {
+            System.out.println(e);
         }
+    }
+
+    public boolean verificarMaquina(Integer idUsuario) {
+        try {
+            Maquina maquinaVerificacao = conec.queryForObject("SELECT * FROM maquina WHERE fkUsuario = ? AND macAddress = ? LIMIT 1", new BeanPropertyRowMapper<>(Maquina.class), idUsuario, macAddress);
+            if (maquinaVerificacao != null) {
+                System.out.println("""
+                        Identificamos que o dispositivo que você está usando está cadastrado!
+                        """);
+                return true;
+            }
+        } catch (EmptyResultDataAccessException e) {
+            System.out.println("""
+                        Identificamos que o dispositivo que você está usando não está cadastrado!
+                        """);
+        }
+        return false;
     }
 
 
@@ -77,5 +88,21 @@ public class Maquina {
 
     public Double getMaxDisco() {
         return maxDisco;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "Maquina{" +
+                "macAddress='" + macAddress + '\'' +
+                ", ip='" + ip + '\'' +
+                ", sistemaOperacional='" + sistemaOperacional + '\'' +
+                ", maxCpu=" + maxCpu +
+                ", maxRam=" + maxRam +
+                ", maxDisco=" + maxDisco +
+                '}';
     }
 }
