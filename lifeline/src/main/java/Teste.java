@@ -1,9 +1,10 @@
-
 import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.rede.RedeInterface;
 import maquina.Maquina;
 import maquina.Registro;
 import usuario.Usuario;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Teste {
@@ -27,7 +28,7 @@ public class Teste {
             } else {
                 maquina.cadastrarMaquina(email, nome, idUsuario);
             }
-            // maquina.listarMaquinas(idUsuario);
+
             Registro registro = new Registro();
             System.out.println("""
                     Inserir dados:
@@ -36,7 +37,10 @@ public class Teste {
                     3 - yes
                     """);
             registro.inserirRegistros(idUsuario);
-        }
 
+//        Looca looca = new Looca();
+//        List<RedeInterface> listaRede = looca.getRede().getGrupoDeInterfaces().getInterfaces().stream().filter(redeInterface -> !redeInterface.getEnderecoIpv4().isEmpty()).toList();
+//        System.out.println(listaRede.get(0).getEnderecoMac());
+        }
     }
 }

@@ -1,11 +1,14 @@
 package maquina;
 
+import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.rede.RedeInterface;
 import conexao.Conexao;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -13,29 +16,25 @@ import java.util.TimerTask;
 public class Registro {
     Conexao conectar = new Conexao();
     JdbcTemplate conec = conectar.getConexao();
-    Maquina maquina = new Maquina();
+    Looca looca = new Looca();
     Date data = new Date();
-    private Timer permanenciaDeDados = new Timer();
+    private Timer permanenciaDeDados;
     private Double consumoCPU;
     private Double consumoRam;
     private Double consumoDisco;
     private Integer totalDispositivos;
 
-
-    private Double getConsumoRam() {
-        return maquina.consumoRam();
-    }
-
-    private Double getConsumoCPU() {
-        return maquina.consumoProcessador();
-    }
-
-    private Double getConsumoDisco() {
-        return maquina.consumoTodosDiscos();
-    }
-
-    private Integer getTotalDispositivos() {
-        return maquina.totalDispositvos();
+    //Construtor
+    public Registro() {
+        Double disco = 0.0;
+        for (int i = 0; i < looca.getGrupoDeDiscos().getVolumes().size(); i++) {
+            disco += Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getGrupoDeDiscos().getVolumes().get(i).getTotal() - looca.getGrupoDeDiscos().getVolumes().get(i).getDisponivel()));
+        }
+        this.permanenciaDeDados = new Timer();
+        this.consumoCPU = Conversor.converterDoubleDoisDecimais(looca.getProcessador().getUso());
+        this.consumoRam = Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getMemoria().getEmUso()));
+        this.consumoDisco = disco;
+        this.totalDispositivos = looca.getDispositivosUsbGrupo().getTotalDispositvosUsbConectados();
     }
 
     public void inserirRegistros(Integer fkUsuario) {
@@ -59,5 +58,32 @@ public class Registro {
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Não foi encontrada nenhuma máquina vinculada a este usuário");
         }
+    }
+
+    public Double getConsumoCPU() {
+        return consumoCPU;
+    }
+
+    public Double getConsumoRam() {
+        return consumoRam;
+    }
+
+    public Double getConsumoDisco() {
+        return consumoDisco;
+    }
+
+    public Integer getTotalDispositivos() {
+        return totalDispositivos;
+    }
+
+    @Override
+    public String toString() {
+        return """
+                Registro
+                Consumo de CPU: %.2f
+                Consumo de RAM: %.2f
+                Consumo de Disco: %.2f
+                Total de Dispositivos: %d
+                """.formatted(consumoCPU, consumoRam, consumoDisco, totalDispositivos);
     }
 }
