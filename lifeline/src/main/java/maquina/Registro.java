@@ -17,7 +17,6 @@ public class Registro {
     Conexao conectar = new Conexao();
     JdbcTemplate conec = conectar.getConexao();
     Looca looca = new Looca();
-    Date data = new Date();
     private Timer permanenciaDeDados;
     private Double consumoCPU;
     private Double consumoRam;
@@ -47,18 +46,33 @@ public class Registro {
                 permanenciaDeDados.schedule(new TimerTask() {
                     @Override
                     public void run() {
+                        Date data = new Date();
                         conec.update("""
-                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, totalDispositivosConectados) VALUES (?, ?, ?, ?, ?, ?)
+                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, consumoDispositivos) VALUES (?, ?, ?, ?, ?, ?)
                                 """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(), getTotalDispositivos()
                                 );
+
+                        System.out.println(new Timestamp(data.getTime()));
+                        System.out.println("""
+                    *------------------------------------*
+                    |           Dados Coletados          |
+                    *------------------------------------*
+                    |Consumo da CPU: %.2f                |
+                    |Consumo da RAM: %.2f                |
+                    |Consumo da Disco: %.2f            |
+                    |Quantidade de Dispositivos: %d       |
+                    *------------------------------------*
+                                """.formatted(getConsumoCPU(), getConsumoRam(),getConsumoDisco(),getTotalDispositivos()));
                     }
-                },10000, 2000);
+                },50000, 15000);
                 return null;
             });
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Não foi encontrada nenhuma máquina vinculada a este usuário");
         }
     }
+
+    public
 
     public Double getConsumoCPU() {
         return consumoCPU;

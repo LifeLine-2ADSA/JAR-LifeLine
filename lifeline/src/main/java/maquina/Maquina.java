@@ -35,7 +35,7 @@ public class Maquina {
 
     public void cadastrarMaquina(String nome, Integer idUsuario) {
         try {
-            conec.update("INSERT INTO maquina (nome, ip, macAddress, sistemaOperacional, maxCpu, maxRam, maxDisco, fkUsuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            conec.update("INSERT INTO maquina (nomeMaquina, ip, macAddress, sistemaOperacional, maxCpu, maxRam, maxDisco, fkUsuario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     nome, getIp(), getMacAddress(), getSistemaOperacional(), getMaxCpu(), getMaxRam(), getMaxDisco(), idUsuario);
             conec.update("""
                     INSERT INTO limitador (fkMaquina, limiteCpu, limiteRam, limiteDisco)
@@ -56,13 +56,26 @@ public class Maquina {
             Maquina maquinaVerificacao = conec.queryForObject("SELECT * FROM maquina WHERE fkUsuario = ? AND macAddress = ? LIMIT 1", new BeanPropertyRowMapper<>(Maquina.class), idUsuario, macAddress);
             if (maquinaVerificacao != null) {
                 System.out.println("""
-                        Identificamos que o dispositivo que você está usando está cadastrado!
+                    *------------------------------------*
+                    |              Sistema               |
+                    *------------------------------------*
+                    |O sistema identificou que o         |
+                    |dispositivo que você está usando    |
+                    |está cadastrado!                    |
+                    *------------------------------------*
                         """);
                 return true;
             }
         } catch (EmptyResultDataAccessException e) {
             System.out.println("""
-                        Identificamos que o dispositivo que você está usando não está cadastrado!
+                    *------------------------------------*
+                    |              Sistema               |
+                    *------------------------------------*
+                    |O sistema identificou que o         |
+                    |dispositivo que você está usando    |
+                    |não está cadastrado!                |
+                    |Indo para o cadastro do dispositivo |
+                    *------------------------------------*
                         """);
         }
         return false;

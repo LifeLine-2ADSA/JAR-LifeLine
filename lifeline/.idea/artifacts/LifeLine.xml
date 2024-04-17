@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="LifeLine">
+    <output-path>$PROJECT_DIR$/out/artifacts/LifeLine</output-path>
+    <root id="archive" name="LifeLine.jar" />
+  </artifact>
+</component>

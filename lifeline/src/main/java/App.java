@@ -1,4 +1,5 @@
 import maquina.Maquina;
+import maquina.Registro;
 import usuario.Usuario;
 
 import java.util.Scanner;
@@ -25,7 +26,7 @@ public class App {
             } else if (opcao == 1) {
             System.out.printf("""
                     *------------------------------------*
-                    | Olá, Seja bem-vindo(a) a Life Line!|
+                    |        Login - Life Line           |
                     *------------------------------------*
                     |Digite o seu email:                 |
                     *------------------------------------*
@@ -42,19 +43,26 @@ public class App {
 
             Usuario usuario = new Usuario(email, senha);
             Maquina maquinaUsuario = new Maquina();
+            Scanner sc2 = new Scanner(System.in);
 
             if (!maquinaUsuario.verificarMaquina(usuario.getIdUsuario())) {
                 System.out.printf(
-                        """
+                    """
                     *------------------------------------*
                     |Digite o nome para a maquina:       |
                     *------------------------------------*
-                                """
+                     """
                 );
-                String nomeMaquina = leitor.nextLine();
-                maquinaUsuario.cadastrarMaquina(nomeMaquina, usuario.getIdUsuario());
+                String nomeMaquina = sc2.nextLine();
+
+                if (nomeMaquina.length() > 1) {
+                    maquinaUsuario.cadastrarMaquina(nomeMaquina, usuario.getIdUsuario());
+                }
             } else {
-                // Quando já tem a maquina cadastrada
+                while (true) {
+                    Registro registro = new Registro();
+                    registro.inserirRegistros(usuario.getIdUsuario(), maquinaUsuario.getMacAddress());
+                }
             }
             } else {
                 System.out.println("Digite uma opção válida!");
