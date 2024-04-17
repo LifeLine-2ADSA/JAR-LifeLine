@@ -1,4 +1,6 @@
+import com.github.britooo.looca.api.core.Looca;
 import conexao.Conexao;
+import maquina.Conversor;
 import maquina.Maquina;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -19,5 +21,12 @@ public class Teste {
 //        } catch (EmptyResultDataAccessException e) {
 //            System.out.println("vazio");
 //        }
+//        Looca looca = new Looca();
+//
+//        Double disco = 0.0;
+//        for (int i = 0; i < looca.getGrupoDeDiscos().getVolumes().size(); i++) {
+//            disco += Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getGrupoDeDiscos().getVolumes().get(i).getTotal() - looca.getGrupoDeDiscos().getVolumes().get(i).getDisponivel()));
+//        }
+//        System.out.println(disco);
     }
 }

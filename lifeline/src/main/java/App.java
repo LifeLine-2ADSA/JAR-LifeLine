@@ -24,49 +24,64 @@ public class App {
             if (opcao == 0) {
                 System.out.printf("Encerrando...");
             } else if (opcao == 1) {
-            System.out.printf("""
-                    *------------------------------------*
-                    |        Login - Life Line           |
-                    *------------------------------------*
-                    |Digite o seu email:                 |
-                    *------------------------------------*
-                    """
-            );
-            String email = leitor.next();
-                System.out.printf("""
-                    *------------------------------------*
-                    |Digite o sua senha:                 |
-                    *------------------------------------*
-                    """
-                );
-            String senha = leitor.next();
-
-            Usuario usuario = new Usuario(email, senha);
-            Maquina maquinaUsuario = new Maquina();
-            Scanner sc2 = new Scanner(System.in);
-
-            if (!maquinaUsuario.verificarMaquina(usuario.getIdUsuario())) {
-                System.out.printf(
-                    """
-                    *------------------------------------*
-                    |Digite o nome para a maquina:       |
-                    *------------------------------------*
-                     """
-                );
-                String nomeMaquina = sc2.nextLine();
-
-                if (nomeMaquina.length() > 1) {
-                    maquinaUsuario.cadastrarMaquina(nomeMaquina, usuario.getIdUsuario());
-                }
-            } else {
-                while (true) {
-                    Registro registro = new Registro();
-                    registro.inserirRegistros(usuario.getIdUsuario(), maquinaUsuario.getMacAddress());
-                }
-            }
+                Usuario usuarioLogado = login();
+                maquina(usuarioLogado);
             } else {
                 System.out.println("Digite uma opção válida!");
             }
         } while (opcao != 1 && opcao != 0);
+    }
+
+    private static Usuario login() {
+        Scanner leitor = new Scanner(System.in);
+
+        System.out.printf("""
+                *------------------------------------*
+                |        Login - Life Line           |
+                *------------------------------------*
+                |Digite o seu email:                 |
+                *------------------------------------*
+                """
+        );
+        String email = leitor.next();
+        System.out.printf("""
+                *------------------------------------*
+                |Digite a sua senha:                 |
+                *------------------------------------*
+                """
+        );
+        String senha = leitor.next();
+
+        return new Usuario(email, senha);
+    }
+
+    private static void maquina(Usuario usuarioLogado) {
+        Scanner sc2 = new Scanner(System.in);
+        Maquina maquinaUsuario = new Maquina();
+
+        if (!maquinaUsuario.verificarMaquina(usuarioLogado.getIdUsuario())) {
+            System.out.printf(
+                    """
+                            *------------------------------------*
+                            |       Cadastro de dispositivo      |
+                            *------------------------------------*
+                            |Digite o nome para a maquina:       |
+                            *------------------------------------*
+                             """
+            );
+            String nomeMaquina = sc2.nextLine();
+            if (nomeMaquina.length() > 1) {
+                maquinaUsuario.cadastrarMaquina(nomeMaquina, usuarioLogado.getIdUsuario());
+                while (true) {
+                    Registro registro = new Registro();
+                    registro.inserirRegistros(maquinaUsuario.getIdMaquina());
+                }
+            }
+        } else {
+            while (true) {
+                Registro registro = new Registro();
+                registro.inserirRegistros(maquinaUsuario.getIdMaquina());
+            }
+        }
     }
 }

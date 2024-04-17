@@ -15,6 +15,7 @@ public class Maquina {
     Conexao conectar = new Conexao();
     JdbcTemplate conec = conectar.getConexao();
     Looca looca = new Looca();
+    private Integer idMaquina;
     private String macAddress;
     private String ip;
     private String sistemaOperacional;
@@ -49,19 +50,20 @@ public class Maquina {
         } catch (DataAccessException e) {
             System.out.println(e);
         }
+        this.idMaquina = conec.queryForObject("SELECT idMaquina FROM maquina WHERE fkUsuario = ? AND macAddress = ? LIMIT 1", Integer.class, idUsuario, macAddress);
     }
 
     public boolean verificarMaquina(Integer idUsuario) {
         try {
-            Maquina maquinaVerificacao = conec.queryForObject("SELECT * FROM maquina WHERE fkUsuario = ? AND macAddress = ? LIMIT 1", new BeanPropertyRowMapper<>(Maquina.class), idUsuario, macAddress);
-            if (maquinaVerificacao != null) {
+            Integer idMaquina = conec.queryForObject("SELECT idMaquina FROM maquina WHERE fkUsuario = ? AND macAddress = ? LIMIT 1", Integer.class, idUsuario, macAddress);
+            if (idMaquina != null) {
+                this.idMaquina = idMaquina;
+
                 System.out.println("""
                     *------------------------------------*
                     |              Sistema               |
                     *------------------------------------*
-                    |O sistema identificou que o         |
-                    |dispositivo que você está usando    |
-                    |está cadastrado!                    |
+                    |Dispositivo Identificado!           |
                     *------------------------------------*
                         """);
                 return true;
@@ -71,18 +73,19 @@ public class Maquina {
                     *------------------------------------*
                     |              Sistema               |
                     *------------------------------------*
-                    |O sistema identificou que o         |
-                    |dispositivo que você está usando    |
+                    |O dispositivo que você está usando  |
                     |não está cadastrado!                |
-                    |Indo para o cadastro do dispositivo |
+                    |Indo para o cadastro do dispositivo.|
                     *------------------------------------*
                         """);
         }
         return false;
     }
-
-
     //Getter
+
+    public Integer getIdMaquina() {
+        return idMaquina;
+    }
     public String getIp() {
         return ip;
     }

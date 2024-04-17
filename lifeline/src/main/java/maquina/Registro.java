@@ -6,6 +6,7 @@ import conexao.Conexao;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.SQLOutput;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -36,13 +37,8 @@ public class Registro {
         this.totalDispositivos = looca.getDispositivosUsbGrupo().getTotalDispositvosUsbConectados();
     }
 
-    public void inserirRegistros(Integer fkUsuario, String macAddress) {
-
+    public void inserirRegistros(Integer idMaquina) {
         try {
-            String query = "SELECT idMaquina FROM maquina WHERE fkUsuario = ? AND macAddress = ?";
-            conec.queryForObject(query, new Object[]{fkUsuario, macAddress}, (resposta, indice) -> {
-                Integer idMaquina = resposta.getInt(1);
-
                 permanenciaDeDados.schedule(new TimerTask() {
                     @Override
                     public void run() {
@@ -57,22 +53,45 @@ public class Registro {
                     *------------------------------------*
                     |           Dados Coletados          |
                     *------------------------------------*
-                    |Consumo da CPU: %.2f                |
+                    |Consumo da CPU: %.2f               |
                     |Consumo da RAM: %.2f                |
                     |Consumo da Disco: %.2f            |
                     |Quantidade de Dispositivos: %d       |
                     *------------------------------------*
                                 """.formatted(getConsumoCPU(), getConsumoRam(),getConsumoDisco(),getTotalDispositivos()));
                     }
-                },50000, 15000);
-                return null;
-            });
+                },50000, 25000);
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Não foi encontrada nenhuma máquina vinculada a este usuário");
         }
+        triggerRegistro(idMaquina);
     }
 
-    public
+    private void triggerRegistro(Integer idMaquina) {
+        try {
+            String sql = "SELECT limiteCpu, limiteRam,limiteDisco FROM limitador WHERE fkMaquina = ?";
+            conec.queryForObject(sql, new Object[]{idMaquina}, (resposta, indice) -> {
+                if (resposta.getDouble(1) > getConsumoCPU() ||
+                        resposta.getDouble(2) > getConsumoRam()
+                        //resposta.getDouble(3) > getConsumoDisco()
+                ) {
+                    Date data = new Date();
+                    Integer fkRegistro = conec.queryForObject("SELECT idRegistro FROM registro ORDER BY idRegistro DESC LIMIT 1", Integer.class);
+
+                    conec.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
+
+                    System.out.println("""
+                            ----------------------------------------------------------------------------------------------------------------
+                            ALERTEI!!!!!!!!!!!
+                            ----------------------------------------------------------------------------------------------------------------
+                            """);
+                }
+                return null;
+            });
+        } catch (EmptyResultDataAccessException e) {
+            System.out.println(e);
+        }
+    }
 
     public Double getConsumoCPU() {
         return consumoCPU;
