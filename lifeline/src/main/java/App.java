@@ -24,8 +24,18 @@ public class App {
             if (opcao == 0) {
                 System.out.printf("Encerrando...");
             } else if (opcao == 1) {
-                Usuario usuarioLogado = login();
-                maquina(usuarioLogado);
+                Boolean usuarioLogado = false;
+                Usuario usuario = login();
+
+                do {
+                    if (usuario.getIdUsuario() != null) {
+                        usuarioLogado = true;
+                    } else {
+                        usuario = login();
+                    }
+                } while (usuarioLogado);
+
+                maquina(usuario);
             } else {
                 System.out.println("Digite uma opção válida!");
             }
@@ -34,54 +44,40 @@ public class App {
 
     private static Usuario login() {
         Scanner leitor = new Scanner(System.in);
-
-        System.out.printf("""
+            System.out.printf("""
                 *------------------------------------*
                 |        Login - Life Line           |
                 *------------------------------------*
                 |Digite o seu email:                 |
                 *------------------------------------*
                 """
-        );
-        String email = leitor.next();
-        System.out.printf("""
+            );
+            String email = leitor.next();
+            System.out.printf("""
                 *------------------------------------*
                 |Digite a sua senha:                 |
                 *------------------------------------*
                 """
-        );
-        String senha = leitor.next();
-
-        return new Usuario(email, senha);
+            );
+            String senha = leitor.next();
+            return new Usuario(email, senha);
     }
 
-    private static void maquina(Usuario usuarioLogado) {
+    private static void maquina(Usuario usuario) {
         Scanner sc2 = new Scanner(System.in);
         Maquina maquinaUsuario = new Maquina();
 
-        if (!maquinaUsuario.verificarMaquina(usuarioLogado.getIdUsuario())) {
-            System.out.printf(
-                    """
-                            *------------------------------------*
-                            |       Cadastro de dispositivo      |
-                            *------------------------------------*
-                            |Digite o nome para a maquina:       |
-                            *------------------------------------*
-                             """
-            );
+        if (!maquinaUsuario.verificarMaquina(usuario.getIdUsuario())) {
+            // maquina nao identificada
             String nomeMaquina = sc2.nextLine();
             if (nomeMaquina.length() > 1) {
-                maquinaUsuario.cadastrarMaquina(nomeMaquina, usuarioLogado.getIdUsuario());
-                while (true) {
-                    Registro registro = new Registro();
-                    registro.inserirRegistros(maquinaUsuario.getIdMaquina());
-                }
+                maquinaUsuario.cadastrarMaquina(nomeMaquina, usuario.getIdUsuario());
             }
-        } else {
-            while (true) {
-                Registro registro = new Registro();
-                registro.inserirRegistros(maquinaUsuario.getIdMaquina());
-            }
+        }
+
+        while (true) {
+            Registro registro = new Registro();
+            registro.inserirRegistros(maquinaUsuario.getIdMaquina());
         }
     }
 }

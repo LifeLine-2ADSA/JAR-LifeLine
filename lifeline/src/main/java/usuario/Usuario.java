@@ -37,7 +37,7 @@ public class Usuario {
                 return null;
             });
         } catch (EmptyResultDataAccessException e) {
-            System.out.println("Email ou senha incorretos");
+            System.out.println("Email ou senha incorretos, tente novamente...");
         }
 
     }

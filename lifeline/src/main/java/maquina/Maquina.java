@@ -58,7 +58,6 @@ public class Maquina {
             Integer idMaquina = conec.queryForObject("SELECT idMaquina FROM maquina WHERE fkUsuario = ? AND macAddress = ? LIMIT 1", Integer.class, idUsuario, macAddress);
             if (idMaquina != null) {
                 this.idMaquina = idMaquina;
-
                 System.out.println("""
                     *------------------------------------*
                     |              Sistema               |

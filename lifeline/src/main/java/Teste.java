@@ -1,10 +1,15 @@
 import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.janelas.Janela;
+import com.github.britooo.looca.api.group.janelas.JanelaGrupo;
+import com.github.britooo.looca.api.group.processos.Processo;
 import conexao.Conexao;
 import maquina.Conversor;
 import maquina.Maquina;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.List;
 
 
 public class Teste {
@@ -21,12 +26,18 @@ public class Teste {
 //        } catch (EmptyResultDataAccessException e) {
 //            System.out.println("vazio");
 //        }
-//        Looca looca = new Looca();
+        Looca looca = new Looca();
 //
 //        Double disco = 0.0;
 //        for (int i = 0; i < looca.getGrupoDeDiscos().getVolumes().size(); i++) {
 //            disco += Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getGrupoDeDiscos().getVolumes().get(i).getTotal() - looca.getGrupoDeDiscos().getVolumes().get(i).getDisponivel()));
 //        }
 //        System.out.println(disco);
+        //System.out.println(looca.getGrupoDeJanelas().getJanelasVisiveis());
+        //looca.getGrupoDeJanelas().getJanelasVisiveis().get(1).getTitulo()
+        List<Processo> lista = looca.getGrupoDeProcessos().getProcessos().stream().filter(processo -> processo.getUsoCpu().doubleValue() > 0.5).toList();
+        System.out.println(lista);
+        List<JanelaGrupo> lista2 = looca.getGrupoDeJanelas().getJanelasVisiveis().stream().filter().toList();
+        System.out.println(lista2);
     }
 }
