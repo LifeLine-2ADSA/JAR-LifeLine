@@ -4,10 +4,13 @@ import com.github.britooo.looca.api.group.janelas.JanelaGrupo;
 import com.github.britooo.looca.api.group.processos.Processo;
 import conexao.Conexao;
 import maquina.Conversor;
+import maquina.Limite;
 import maquina.Maquina;
+import maquina.Registro;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import usuario.Usuario;
 
 import java.util.List;
 
@@ -35,9 +38,19 @@ public class Teste {
 //        System.out.println(disco);
         //System.out.println(looca.getGrupoDeJanelas().getJanelasVisiveis());
         //looca.getGrupoDeJanelas().getJanelasVisiveis().get(1).getTitulo()
-        List<Processo> lista = looca.getGrupoDeProcessos().getProcessos().stream().filter(processo -> processo.getUsoCpu().doubleValue() > 0.5).toList();
-        System.out.println(lista);
-        List<JanelaGrupo> lista2 = looca.getGrupoDeJanelas().getJanelasVisiveis().stream().filter().toList();
-        System.out.println(lista2);
+//        List<Processo> lista = looca.getGrupoDeProcessos().getProcessos().stream().filter(processo -> processo.getUsoCpu().doubleValue() > 0.5).toList();
+//        System.out.println(lista);
+//        List<JanelaGrupo> lista2 = looca.getGrupoDeJanelas().getJanelasVisiveis().stream().filter().toList();
+//        System.out.println(lista2);
+        Usuario usuario = new Usuario("joao@techinnovations.com", "senha123");
+        Maquina maquina = new Maquina();
+        if (!maquina.verificarMaquina(usuario.getIdUsuario())) { // Caso maquina não foi identificada
+            maquina.cadastrarMaquina(usuario.getIdUsuario());
+        }
+        Limite limite = new Limite(maquina.getIdMaquina());
+        while (true) {
+            Registro registro = new Registro();
+            registro.inserirRegistros(maquina.getIdMaquina(), limite);
+        }
     }
 }

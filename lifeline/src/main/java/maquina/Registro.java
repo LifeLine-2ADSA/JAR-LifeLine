@@ -22,7 +22,6 @@ public class Registro {
     private Double consumoCPU;
     private Double consumoRam;
     private Double consumoDisco;
-    private Integer totalDispositivos;
 
     //Construtor
     public Registro() {
@@ -34,62 +33,61 @@ public class Registro {
         this.consumoCPU = Conversor.converterDoubleDoisDecimais(looca.getProcessador().getUso());
         this.consumoRam = Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getMemoria().getEmUso()));
         this.consumoDisco = disco;
-        this.totalDispositivos = looca.getDispositivosUsbGrupo().getTotalDispositvosUsbConectados();
     }
 
-    public void inserirRegistros(Integer idMaquina) {
+    public void inserirRegistros(Integer idMaquina, Limite trigger) {
         try {
+            // Loop para registrar o dados do recurso ao banco
                 permanenciaDeDados.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        Date data = new Date();
+                        Date data = new Date(); // data da coleta
+                        // insert ao banco
                         conec.update("""
-                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, consumoDispositivos) VALUES (?, ?, ?, ?, ?, ?)
-                                """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(), getTotalDispositivos()
+                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco) VALUES (?, ?, ?, ?, ?)
+                                """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco()
                                 );
 
-                        System.out.println(new Timestamp(data.getTime()));
                         System.out.println("""
                     *------------------------------------*
                     |           Dados Coletados          |
                     *------------------------------------*
-                    |Consumo da CPU: %.2f               |
-                    |Consumo da RAM: %.2f                |
-                    |Consumo da Disco: %.2f            |
-                    |Quantidade de Dispositivos: %d       |
+                    |Consumo da CPU: %.2f
+                    |Consumo da RAM: %.2f
+                    |Consumo da Disco: %.2f
                     *------------------------------------*
-                                """.formatted(getConsumoCPU(), getConsumoRam(),getConsumoDisco(),getTotalDispositivos()));
+                                """.formatted(getConsumoCPU(), getConsumoRam(),getConsumoDisco()));
+                        triggerRegistro(idMaquina, trigger); // Pos inserção de registro dos volateis
                     }
-                },50000, 25000);
+                },0, 50000);
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Não foi encontrada nenhuma máquina vinculada a este usuário");
         }
-        triggerRegistro(idMaquina);
     }
 
-    private void triggerRegistro(Integer idMaquina) {
+    private void triggerRegistro(Integer idMaquina, Limite trigger) {
         try {
-            String sql = "SELECT limiteCpu, limiteRam,limiteDisco FROM limitador WHERE fkMaquina = ?";
-            conec.queryForObject(sql, new Object[]{idMaquina}, (resposta, indice) -> {
-                if (resposta.getDouble(1) > getConsumoCPU() ||
-                        resposta.getDouble(2) > getConsumoRam()
-                        //resposta.getDouble(3) > getConsumoDisco()
+                // Comparando limite com o consumo
+                if ( trigger.getLimiteCPU() < consumoCPU ||
+                        trigger.getLimiteRam() < consumoRam ||
+                        trigger.getLimiteDisco() < consumoDisco
                 ) {
-                    Date data = new Date();
-                    Integer fkRegistro = conec.queryForObject("SELECT idRegistro FROM registro ORDER BY idRegistro DESC LIMIT 1", Integer.class);
+                    // Caso consumo ultrapasse o limite
+                    Date data = new Date(); // Data e hora do alerta
+                    // Coletando id do registro mais recente
+                    Integer fkRegistro = conec.queryForObject("SELECT idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC LIMIT 1", Integer.class, idMaquina);
 
+                    // Insert do alerta
                     conec.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
 
                     System.out.println("""
-                            ----------------------------------------------------------------------------------------------------------------
+                            ------------------
                             ALERTEI!!!!!!!!!!!
-                            ----------------------------------------------------------------------------------------------------------------
+                            ------------------
                             """);
                 }
-                return null;
-            });
         } catch (EmptyResultDataAccessException e) {
-            System.out.println(e);
+            System.out.println("Erro no insert do trigger");
         }
     }
 
@@ -105,10 +103,6 @@ public class Registro {
         return consumoDisco;
     }
 
-    public Integer getTotalDispositivos() {
-        return totalDispositivos;
-    }
-
     @Override
     public String toString() {
         return """
@@ -116,7 +110,6 @@ public class Registro {
                 Consumo de CPU: %.2f
                 Consumo de RAM: %.2f
                 Consumo de Disco: %.2f
-                Total de Dispositivos: %d
-                """.formatted(consumoCPU, consumoRam, consumoDisco, totalDispositivos);
+                """.formatted(consumoCPU, consumoRam, consumoDisco);
     }
 }

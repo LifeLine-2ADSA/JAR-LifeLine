@@ -1,3 +1,4 @@
+import maquina.Limite;
 import maquina.Maquina;
 import maquina.Registro;
 import usuario.Usuario;
@@ -33,9 +34,9 @@ public class App {
                     } else {
                         usuario = login();
                     }
-                } while (usuarioLogado);
+                } while (!usuarioLogado); // Login bem sucedido
 
-                maquina(usuario);
+                maquina(usuario); // Pos login
             } else {
                 System.out.println("Digite uma opção válida!");
             }
@@ -64,20 +65,15 @@ public class App {
     }
 
     private static void maquina(Usuario usuario) {
-        Scanner sc2 = new Scanner(System.in);
         Maquina maquinaUsuario = new Maquina();
 
-        if (!maquinaUsuario.verificarMaquina(usuario.getIdUsuario())) {
-            // maquina nao identificada
-            String nomeMaquina = sc2.nextLine();
-            if (nomeMaquina.length() > 1) {
-                maquinaUsuario.cadastrarMaquina(nomeMaquina, usuario.getIdUsuario());
-            }
+        if (!maquinaUsuario.verificarMaquina(usuario.getIdUsuario())) { // Caso maquina não foi identificada
+            maquinaUsuario.cadastrarMaquina(usuario.getIdUsuario());
         }
-
+        Limite limite = new Limite(maquinaUsuario.getIdMaquina());
         while (true) {
             Registro registro = new Registro();
-            registro.inserirRegistros(maquinaUsuario.getIdMaquina());
+            registro.inserirRegistros(maquinaUsuario.getIdMaquina(), limite);
         }
     }
 }
