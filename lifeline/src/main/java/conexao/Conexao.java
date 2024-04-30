@@ -11,8 +11,8 @@ public class Conexao {
     BasicDataSource data = new BasicDataSource();
     data.setDriverClassName("com.mysql.cj.jdbc.Driver");
     data.setUrl("jdbc:mysql://localhost:3306/lifeline");
-    data.setUsername("EU");
-    data.setPassword("215912");
+    data.setUsername("root");
+    data.setPassword("root");
 
     conexao = new JdbcTemplate(data);
   }
