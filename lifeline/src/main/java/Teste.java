@@ -30,6 +30,8 @@ public class Teste {
 //            System.out.println("vazio");
 //        }
         Looca looca = new Looca();
+
+        System.out.println(looca.getRede().getParametros().getHostName());
 //
 //        Double disco = 0.0;
 //        for (int i = 0; i < looca.getGrupoDeDiscos().getVolumes().size(); i++) {
@@ -42,15 +44,15 @@ public class Teste {
 //        System.out.println(lista);
 //        List<JanelaGrupo> lista2 = looca.getGrupoDeJanelas().getJanelasVisiveis().stream().filter().toList();
 //        System.out.println(lista2);
-        Usuario usuario = new Usuario("joao@techinnovations.com", "senha123");
-        Maquina maquina = new Maquina();
-        if (!maquina.verificarMaquina(usuario.getIdUsuario())) { // Caso maquina não foi identificada
-            maquina.cadastrarMaquina(usuario.getIdUsuario());
-        }
-        Limite limite = new Limite(maquina.getIdMaquina());
-        while (true) {
-            Registro registro = new Registro();
-            registro.inserirRegistros(maquina.getIdMaquina(), limite);
-        }
+//        Usuario usuario = new Usuario("joao@techinnovations.com", "senha123");
+//        Maquina maquina = new Maquina();
+//        if (!maquina.verificarMaquina(usuario.getIdUsuario())) { // Caso maquina não foi identificada
+//            maquina.cadastrarMaquina(usuario.getIdUsuario());
+//        }
+//        Limite limite = new Limite(maquina.getIdMaquina());
+//        while (true) {
+//            Registro registro = new Registro();
+//            registro.inserirRegistros(maquina.getIdMaquina(), limite);
+//        }
     }
 }

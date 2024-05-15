@@ -45,23 +45,23 @@ public class App {
 
     private static Usuario login() {
         Scanner leitor = new Scanner(System.in);
-        System.out.printf("""
+            System.out.printf("""
                 *------------------------------------*
                 |        Login - Life Line           |
                 *------------------------------------*
                 |Digite o seu email:                 |
                 *------------------------------------*
                 """
-        );
-        String email = leitor.next();
-        System.out.printf("""
+            );
+            String email = leitor.next();
+            System.out.printf("""
                 *------------------------------------*
                 |Digite a sua senha:                 |
                 *------------------------------------*
                 """
-        );
-        String senha = leitor.next();
-        return new Usuario(email, senha);
+            );
+            String senha = leitor.next();
+            return new Usuario(email, senha);
     }
 
     private static void maquina(Usuario usuario) {

@@ -20,7 +20,7 @@ public class Maquina {
 
     private Integer idMaquina;
     private String nomeMaquina;
-    private String macAddress;
+    private String hostname;
     private String ip;
     private String sistemaOperacional;
     private Double maxCpu;
@@ -30,7 +30,7 @@ public class Maquina {
     private void coletarDadosMaquina() {
         List<RedeInterface> listaRede = looca.getRede().getGrupoDeInterfaces().getInterfaces().stream().filter(redeInterface -> !redeInterface.getEnderecoIpv4().isEmpty()).toList();
 
-        this.macAddress = listaRede.get(0).getEnderecoMac();
+        this.hostname = looca.getRede().getParametros().getHostName();
         this.ip = listaRede.get(0).getEnderecoIpv4().get(0);
         this.sistemaOperacional = looca.getSistema().getSistemaOperacional();
         this.maxCpu = Conversor.converterFrequencia(looca.getProcessador().getFrequencia());
@@ -41,7 +41,7 @@ public class Maquina {
     private Integer escolhaMaquinas(Integer idUsuario) {
         try {
             // Procura maquinas com MAC Address nula com nome no banco
-            List<Maquina> listaMaquinas = conec.query("SELECT m.idMaquina, m.nomeMaquina, m.macAddress, m.ip, m.sistemaOperacional, m.maxCpu, m.maxRam, m.maxDisco FROM maquina m WHERE fkUsuario = ? AND macAddress = macAddress IS NULL", new BeanPropertyRowMapper<>(Maquina.class), idUsuario);
+            List<Maquina> listaMaquinas = conec.query("SELECT m.idMaquina, m.nomeMaquina, m.hostname, m.ip, m.sistemaOperacional, m.maxCpu, m.maxRam, m.maxDisco FROM maquina m WHERE fkUsuario = ? AND hostname = hostname IS NULL", new BeanPropertyRowMapper<>(Maquina.class), idUsuario);
 
             // Caso exista maquinas sem atributos recurso com nome
             if (!listaMaquinas.isEmpty()) {
@@ -64,7 +64,7 @@ public class Maquina {
             // Caso não exista maquinas sem atributos recurso com nome
             System.out.println("Sem máquinas para associar.");
         }
-        return 0;
+        return null;
     }
     public void cadastrarMaquina(Integer idUsuario) {
         Integer idMaquina = escolhaMaquinas(idUsuario);
@@ -72,7 +72,7 @@ public class Maquina {
             try {
                 coletarDadosMaquina();
                 // Atualizando atributos de recurso da tabela Maquina
-                conec.update("UPDATE maquina SET ip = ? ,macAddress = ?, sistemaOperacional = ?, maxCpu = ?,maxRam = ?,maxDisco = ? WHERE idMaquina = ?", getIp(), getMacAddress(), getSistemaOperacional(), getMaxCpu(), getMaxRam(), getMaxDisco(), idMaquina);
+                conec.update("UPDATE maquina SET ip = ? ,hostname = ?, sistemaOperacional = ?, maxCpu = ?,maxRam = ?,maxDisco = ? WHERE idMaquina = ?", getIp(), getHostname(), getSistemaOperacional(), getMaxCpu(), getMaxRam(), getMaxDisco(), idMaquina);
 
                 // Adicionando limitador referente a tabela Maquina do usuario
                 conec.update("""
@@ -82,8 +82,8 @@ public class Maquina {
                                                 maxCpu * 0.8,  -- Reduzindo o limite de CPU em 20%
                                                 maxRam * 0.8,  -- Reduzindo o limite de RAM em 20%
                                                 maxDisco * 0.8  -- Reduzindo o limite de disco em 20%
-                                            FROM maquina where fkUsuario = ? AND macAddress = ?
-                        """, idUsuario, macAddress);
+                                            FROM maquina where fkUsuario = ? AND hostname = ?
+                        """, idUsuario, hostname);
             } catch (DataAccessException e) {
                 // Erro caso não insira os dados no banco
                 System.out.println(e);
@@ -96,8 +96,8 @@ public class Maquina {
         coletarDadosMaquina();
         try {
             // Procura maquina no banco pelo MAC Address
-            Integer idMaquina = conec.queryForObject("SELECT idMaquina FROM maquina WHERE fkUsuario = ? AND macAddress = ? LIMIT 1"
-                    , Integer.class, idUsuario, macAddress);
+            Integer idMaquina = conec.queryForObject("SELECT idMaquina FROM maquina WHERE fkUsuario = ? AND hostname = ? LIMIT 1"
+                    , Integer.class, idUsuario, hostname);
 
             if (idMaquina != null) { // Caso exista o MAC Address no banco
                 this.idMaquina = idMaquina;
@@ -154,8 +154,8 @@ public class Maquina {
         return maxDisco;
     }
 
-    public String getMacAddress() {
-        return macAddress;
+    public String getHostname() {
+        return hostname;
     }
 
     public void setIdMaquina(Integer idMaquina) {
@@ -166,8 +166,8 @@ public class Maquina {
         this.nomeMaquina = nomeMaquina;
     }
 
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 
     public void setIp(String ip) {
@@ -195,7 +195,7 @@ public class Maquina {
         return "Maquina{" +
                 "idMaquina=" + idMaquina +
                 ", nome='" + nomeMaquina + '\'' +
-                ", macAddress='" + macAddress + '\'' +
+                ", hostname='" + hostname + '\'' +
                 ", ip='" + ip + '\'' +
                 ", sistemaOperacional='" + sistemaOperacional + '\'' +
                 ", maxCpu=" + maxCpu +

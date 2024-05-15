@@ -4,8 +4,6 @@ import conexao.Conexao;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.Scanner;
-
 public class Usuario {
     //Instancias
     Conexao conectar = new Conexao();
@@ -17,8 +15,6 @@ public class Usuario {
     private String endereco;
     private String telefone;
     private String cargo;
-    private String nomeEmpresa;
-    private Boolean ti;
     private String email;
     private String senha;
     private String cpf;
@@ -26,8 +22,6 @@ public class Usuario {
 
     //Construtor
     public Usuario(String email, String senha) {
-        this.ti = false;
-        this.nomeEmpresa = this.checarEmpresa();
         try {
             String sql = "SELECT * FROM usuario WHERE email = ? AND senha = ?";
             con.queryForObject(sql, new Object[]{email, senha}, (resposta, indice) -> {
@@ -45,17 +39,8 @@ public class Usuario {
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Email ou senha incorretos, tente novamente...");
         }
-    }
 
-    public String checarEmpresa() {
-        try{
-           return con.queryForObject("SELECT e.nome FROM usuario u JOIN empresa e on u.fkEmpresa = e.idEmpresa WHERE u.idUsuario = ?", String.class, getIdUsuario());
-        }catch (EmptyResultDataAccessException e){
-            System.out.println("Usuário não está vinculado a nenhuma empresa...");
-        }
-        return null;
     }
-
 
     public Integer getIdUsuario() {
         return idUsuario;
@@ -75,10 +60,6 @@ public class Usuario {
 
     public String getCargo() {
         return cargo;
-    }
-
-    public Boolean getTi() {
-        return ti;
     }
 
     public String getEmail() {

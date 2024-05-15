@@ -19,8 +19,8 @@ public class ConexaoSql {
                 "user=lifeline_user;" +
                 "password=urubu100;" +
                 "trustServerCertificate=true;");
-        dataSource.setUsername("root");
-        dataSource.setPassword("root");
+        dataSource.setUsername("lifeline_user");
+        dataSource.setPassword("urubu100");
 
 
 
