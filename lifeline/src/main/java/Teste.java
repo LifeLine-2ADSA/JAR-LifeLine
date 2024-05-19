@@ -31,8 +31,8 @@ public class Teste {
 //        }
         Looca looca = new Looca();
 
-        System.out.println(looca.getRede().getParametros().getHostName());
-//
+//        System.out.println(looca.getRede().getParametros().getHostName());
+
 //        Double disco = 0.0;
 //        for (int i = 0; i < looca.getGrupoDeDiscos().getVolumes().size(); i++) {
 //            disco += Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getGrupoDeDiscos().getVolumes().get(i).getTotal() - looca.getGrupoDeDiscos().getVolumes().get(i).getDisponivel()));
@@ -42,17 +42,34 @@ public class Teste {
         //looca.getGrupoDeJanelas().getJanelasVisiveis().get(1).getTitulo()
 //        List<Processo> lista = looca.getGrupoDeProcessos().getProcessos().stream().filter(processo -> processo.getUsoCpu().doubleValue() > 0.5).toList();
 //        System.out.println(lista);
-//        List<JanelaGrupo> lista2 = looca.getGrupoDeJanelas().getJanelasVisiveis().stream().filter().toList();
+
+//        List<Janela> lista2 = looca.getGrupoDeJanelas().getJanelasVisiveis().stream().filter(janela -> janela.getPid().equals(20020)).toList();
 //        System.out.println(lista2);
-//        Usuario usuario = new Usuario("joao@techinnovations.com", "senha123");
-//        Maquina maquina = new Maquina();
-//        if (!maquina.verificarMaquina(usuario.getIdUsuario())) { // Caso maquina não foi identificada
-//            maquina.cadastrarMaquina(usuario.getIdUsuario());
+
+//        Processo processoMaisConsome = looca.getGrupoDeProcessos().getProcessos().get(0);
+//
+//        for (Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
+//            if (processoMaisConsome.getBytesUtilizados() < processo.getBytesUtilizados()) {
+//                processoMaisConsome = processo;
+//            }
 //        }
-//        Limite limite = new Limite(maquina.getIdMaquina());
-//        while (true) {
-//            Registro registro = new Registro();
-//            registro.inserirRegistros(maquina.getIdMaquina(), limite);
+//
+//        Janela janelaProcesso = looca.getGrupoDeJanelas().getJanelas().get(0);
+//
+//        for (Janela janela : looca.getGrupoDeJanelas().getJanelas()) {
+//            if (processoMaisConsome.getPid() == janela.getPid().intValue()) {
+//                janelaProcesso = janela;
+//            }
 //        }
+//
+//        System.out.println(janelaProcesso.getTitulo());
+
+//        System.out.println(looca.getTemperatura().getTemperatura().doubleValue());
+
+        // PULANDO LOGIN
+        Usuario usuario = new Usuario("joao@techinnovations.com", "senha123");
+        Maquina maquina = new Maquina();
+
+        maquina.verificarMaquina(usuario.getIdUsuario());
     }
 }

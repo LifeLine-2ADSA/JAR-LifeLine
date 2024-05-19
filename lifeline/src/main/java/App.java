@@ -66,14 +66,6 @@ public class App {
 
     private static void maquina(Usuario usuario) {
         Maquina maquinaUsuario = new Maquina();
-
-        if (!maquinaUsuario.verificarMaquina(usuario.getIdUsuario())) { // Caso maquina não foi identificada
-            maquinaUsuario.cadastrarMaquina(usuario.getIdUsuario());
-        }
-        Limite limite = new Limite(maquinaUsuario.getIdMaquina());
-        while (true) {
-            Registro registro = new Registro();
-            registro.inserirRegistros(maquinaUsuario.getIdMaquina(), limite);
-        }
+        maquinaUsuario.verificarMaquina(usuario.getIdUsuario());
     }
 }

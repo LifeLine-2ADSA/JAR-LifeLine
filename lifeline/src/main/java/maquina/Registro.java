@@ -1,6 +1,8 @@
 package maquina;
 
 import com.github.britooo.looca.api.core.Looca;
+import com.github.britooo.looca.api.group.janelas.Janela;
+import com.github.britooo.looca.api.group.processos.Processo;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import conexao.Conexao;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,6 +24,8 @@ public class Registro {
     private Double consumoCPU;
     private Double consumoRam;
     private Double consumoDisco;
+    private Double temperatura;
+    private String nomeJanela;
 
     //Construtor
     public Registro() {
@@ -29,6 +33,22 @@ public class Registro {
         for (int i = 0; i < looca.getGrupoDeDiscos().getVolumes().size(); i++) {
             disco += Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getGrupoDeDiscos().getVolumes().get(i).getTotal() - looca.getGrupoDeDiscos().getVolumes().get(i).getDisponivel()));
         }
+
+        Processo processoMaisConsome = looca.getGrupoDeProcessos().getProcessos().get(0);
+        for (Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
+            if (processoMaisConsome.getBytesUtilizados() < processo.getBytesUtilizados()) {
+                processoMaisConsome = processo;
+            }
+        }
+        Janela janelaProcesso = looca.getGrupoDeJanelas().getJanelas().get(0);
+        for (Janela janela : looca.getGrupoDeJanelas().getJanelas()) {
+            if (processoMaisConsome.getPid() == janela.getPid().intValue()) {
+                janelaProcesso = janela;
+            }
+        }
+
+        this.nomeJanela = janelaProcesso.getTitulo();
+        this.temperatura = looca.getTemperatura().getTemperatura().doubleValue();
         this.permanenciaDeDados = new Timer();
         this.consumoCPU = Conversor.converterDoubleDoisDecimais(looca.getProcessador().getUso());
         this.consumoRam = Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getMemoria().getEmUso()));
@@ -44,8 +64,8 @@ public class Registro {
                         Date data = new Date(); // data da coleta
                         // insert ao banco
                         conec.update("""
-                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco) VALUES (?, ?, ?, ?, ?)
-                                """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco()
+                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
+                                """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(),getNomeJanela(),getTemperatura()
                                 );
 
                         System.out.println("""
@@ -55,8 +75,10 @@ public class Registro {
                     |Consumo da CPU: %.2f
                     |Consumo da RAM: %.2f
                     |Consumo da Disco: %.2f
+                    |Nome da Janela: %s
+                    |Temperatura: %.1f
                     *------------------------------------*
-                                """.formatted(getConsumoCPU(), getConsumoRam(),getConsumoDisco()));
+                                """.formatted(getConsumoCPU(), getConsumoRam(),getConsumoDisco(),getNomeJanela(),getTemperatura()));
                         triggerRegistro(idMaquina, trigger); // Pos inserção de registro dos volateis
                     }
                 },0, 50000);
@@ -103,13 +125,23 @@ public class Registro {
         return consumoDisco;
     }
 
+    public Double getTemperatura() {
+        return temperatura;
+    }
+
+    public String getNomeJanela() {
+        return nomeJanela;
+    }
+
     @Override
     public String toString() {
-        return """
-                Registro
-                Consumo de CPU: %.2f
-                Consumo de RAM: %.2f
-                Consumo de Disco: %.2f
-                """.formatted(consumoCPU, consumoRam, consumoDisco);
+        return "Registro{" +
+                ", permanenciaDeDados=" + permanenciaDeDados +
+                ", consumoCPU=" + consumoCPU +
+                ", consumoRam=" + consumoRam +
+                ", consumoDisco=" + consumoDisco +
+                ", temperatura=" + temperatura +
+                ", nomeJanela='" + nomeJanela + '\'' +
+                '}';
     }
 }

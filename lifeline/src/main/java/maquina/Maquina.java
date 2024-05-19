@@ -58,15 +58,22 @@ public class Maquina {
                     return listaMaquinas.get(escolha - 1).getIdMaquina();
                 }
             } else {
-                System.out.println("Nenhuma máquina para associar, cadastre a máquina no site");
+                System.out.println("""
+                    *------------------------------------*
+                    |              Sistema               |
+                    *------------------------------------*
+                    |Error: Cadastre uma máquina no site!|
+                    *------------------------------------*
+                        """);
             }
         } catch (EmptyResultDataAccessException e) {
             // Caso não exista maquinas sem atributos recurso com nome
             System.out.println("Sem máquinas para associar.");
         }
-        return null;
+        return 0;
     }
-    public void cadastrarMaquina(Integer idUsuario) {
+
+    private void cadastrarMaquina(Integer idUsuario) {
         Integer idMaquina = escolhaMaquinas(idUsuario);
         if (idMaquina > 0) {
             try {
@@ -88,11 +95,12 @@ public class Maquina {
                 // Erro caso não insira os dados no banco
                 System.out.println(e);
             }
+
+            verificarMaquina(idUsuario);
         }
-        verificarMaquina(idUsuario);
     }
 
-    public boolean verificarMaquina(Integer idUsuario) {
+    public void verificarMaquina(Integer idUsuario) {
         coletarDadosMaquina();
         try {
             // Procura maquina no banco pelo MAC Address
@@ -101,6 +109,7 @@ public class Maquina {
 
             if (idMaquina != null) { // Caso exista o MAC Address no banco
                 this.idMaquina = idMaquina;
+
                 System.out.println("""
                     *------------------------------------*
                     |              Sistema               |
@@ -108,7 +117,12 @@ public class Maquina {
                     |Dispositivo Identificado!           |
                     *------------------------------------*
                         """);
-                return true;
+
+                Limite limite = new Limite(idMaquina);
+                while (true) {
+                    Registro registro = new Registro();
+                    registro.inserirRegistros(idMaquina, limite);
+                }
             }
         } catch (EmptyResultDataAccessException e) {
             // Caso não exista esse MAC Address no banco
@@ -121,8 +135,8 @@ public class Maquina {
                     |Indo para o cadastro do dispositivo.|
                     *------------------------------------*
                         """);
+            cadastrarMaquina(idUsuario);
         }
-        return false;
     }
     //Getter
 
