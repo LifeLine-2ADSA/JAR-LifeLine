@@ -37,20 +37,26 @@ public class Registro {
             disco += Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getGrupoDeDiscos().getVolumes().get(i).getTotal() - looca.getGrupoDeDiscos().getVolumes().get(i).getDisponivel()));
         }
 
-        Processo processoMaisConsome = looca.getGrupoDeProcessos().getProcessos().get(0);
-        for (Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
-            if (processoMaisConsome.getBytesUtilizados() < processo.getBytesUtilizados()) {
-                processoMaisConsome = processo;
-            }
-        }
-        Janela janelaProcesso = looca.getGrupoDeJanelas().getJanelas().get(0);
-        for (Janela janela : looca.getGrupoDeJanelas().getJanelas()) {
-            if (processoMaisConsome.getPid() == janela.getPid().intValue()) {
-                janelaProcesso = janela;
-            }
-        }
+//        Processo processoMaisConsome = looca.getGrupoDeProcessos().getProcessos().get(0);
+//        for (Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
+//            if (processoMaisConsome.getBytesUtilizados() < processo.getBytesUtilizados()) {
+//                processoMaisConsome = processo;
+//            }
+//        }
+//        Janela janelaProcesso = looca.getGrupoDeJanelas().getJanelas().get(0);
+//        for (Janela janela : looca.getGrupoDeJanelas().getJanelas()) {
+//            if (processoMaisConsome.getPid() == janela.getPid().intValue()) {
+//                janelaProcesso = janela;
+//            }
+//        }
 
-        this.nomeJanela = janelaProcesso.getTitulo();
+        try {
+            this.nomeJanela = ProcessInfo.getTopProcessAndWindow();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Falha ao obter informações do processo.");
+            this.nomeJanela = "Janela não encontrada";
+        }
         this.temperatura = looca.getTemperatura().getTemperatura().doubleValue();
         this.permanenciaDeDados = new Timer();
         this.consumoCPU = Conversor.converterDoubleDoisDecimais(looca.getProcessador().getUso());
