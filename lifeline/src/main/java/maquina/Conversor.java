@@ -1,6 +1,8 @@
 package maquina;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class Conversor {
     private static final long KIBI = 1L << 10;
@@ -38,20 +40,16 @@ public class Conversor {
     }
 
     public static Double converterDoubleDoisDecimais(Double valorDouble) {
-        DecimalFormat fmt = new DecimalFormat("0.00");
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat fmt = new DecimalFormat("0.00", symbols);
         String string = fmt.format(valorDouble);
-        String[] part = string.split("[,]");
-        String string2 = part[0]+"."+part[1];
-        Double valor = Double.parseDouble(string2);
-        return valor;
+        return Double.parseDouble(string);
     }
 
     public static Double converterDoubleTresDecimais(Double valorDouble) {
-        DecimalFormat fmt = new DecimalFormat("0.000");
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat fmt = new DecimalFormat("0.000", symbols);
         String string = fmt.format(valorDouble);
-        String[] part = string.split("[,]");
-        String string2 = part[0]+"."+part[1];
-        Double valor = Double.parseDouble(string2);
-        return valor;
+        return Double.parseDouble(string);
     }
 }
