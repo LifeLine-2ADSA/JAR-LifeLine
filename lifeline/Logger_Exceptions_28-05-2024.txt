@@ -1,0 +1,1 @@
+28-05-2024 19:36:04 : Ocorreu o seguinte erro na linha 27 da Classe Teste: java.lang.ArithmeticException: / by zero

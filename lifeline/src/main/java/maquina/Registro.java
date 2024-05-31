@@ -5,6 +5,7 @@ import com.github.britooo.looca.api.group.janelas.Janela;
 import com.github.britooo.looca.api.group.processos.Processo;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import conexao.Conexao;
+import conexao.ConexaoSql;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -19,6 +20,8 @@ import java.util.TimerTask;
 public class Registro {
     Conexao conectar = new Conexao();
     JdbcTemplate conec = conectar.getConexao();
+    ConexaoSql conexaoSQL = new ConexaoSql();
+    JdbcTemplate conSQL = conexaoSQL.getConexaosql();
     Looca looca = new Looca();
     private Timer permanenciaDeDados;
     private Double consumoCPU;
@@ -56,6 +59,7 @@ public class Registro {
     }
 
     public void inserirRegistros(Integer idMaquina, Limite trigger) {
+
         try {
             // Loop para registrar o dados do recurso ao banco
                 permanenciaDeDados.schedule(new TimerTask() {
@@ -63,11 +67,14 @@ public class Registro {
                     public void run() {
                         Date data = new Date(); // data da coleta
                         // insert ao banco
-                        conec.update("""
+//                        conec.update("""
+//                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
+//                                """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(),getNomeJanela(),getTemperatura()
+//                                );
+                        conSQL.update("""
                                 INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
                                 """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(),getNomeJanela(),getTemperatura()
-                                );
-
+                        );
                         System.out.println("""
                     *------------------------------------*
                     |           Dados Coletados          |
@@ -97,10 +104,11 @@ public class Registro {
                     // Caso consumo ultrapasse o limite
                     Date data = new Date(); // Data e hora do alerta
                     // Coletando id do registro mais recente
-                    Integer fkRegistro = conec.queryForObject("SELECT idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC LIMIT 1", Integer.class, idMaquina);
+                    Integer fkRegistro = conSQL.queryForObject("SELECT TOP 1 idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC", Integer.class, idMaquina);
 
                     // Insert do alerta
-                    conec.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
+                    // conec.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
+                    conSQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
 
                     System.out.println("""
                             ------------------

@@ -1,0 +1,24 @@
+30-05-2024 19:48:57 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 19:52:01 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 19:53:12 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 19:55:32 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 19:57:25 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 19:59:37 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 20:03:07 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 20:08:26 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 20:08:47 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 20:09:11 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 20:10:03 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 20:35:10 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 20:35:20 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 20:40:03 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero
+30-05-2024 20:40:17 : Não foi possivel estabelecer conexão na linha 45 da Classe org.springframework.jdbc.datasource.DataSourceUtils: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLException: Cannot create PoolableConnectionFactory (Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.)
+30-05-2024 20:42:08 : Não foi possivel estabelecer conexão na linha 45 da Classe org.springframework.jdbc.datasource.DataSourceUtils: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLException: Cannot create PoolableConnectionFactory (Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.)
+30-05-2024 20:42:41 : Não foi possivel estabelecer conexão na linha 45 da Classe org.springframework.jdbc.datasource.DataSourceUtils: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLException: Cannot create PoolableConnectionFactory (Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.)
+30-05-2024 21:14:56 : Ocorreu o seguinte erro na linha 40 da Classe Teste: java.lang.ArithmeticException: / by zero

@@ -14,13 +14,11 @@ public class ConexaoSql {
 
 
 
-        dataSource.setUrl("jdbc:sqlserver://EC2" +
+        dataSource.setUrl("jdbc:sqlserver://100.27.91.182:1433;" +
                 "database=lifeline;" +
-                "user=lifeline_user;" +
-                "password=urubu100;" +
                 "trustServerCertificate=true;");
-        dataSource.setUsername("lifeline_user");
-        dataSource.setPassword("urubu100");
+        dataSource.setUsername("sa");
+        dataSource.setPassword("urubu_100");
 
 
 

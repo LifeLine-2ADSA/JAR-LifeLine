@@ -1,12 +1,18 @@
 package maquina;
 
 import conexao.Conexao;
+import conexao.ConexaoSql;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.support.JdbcBeanDefinitionReader;
+
+import javax.swing.*;
 
 public class Limite {
     Conexao conectar = new Conexao();
     JdbcTemplate conec = conectar.getConexao();
+    ConexaoSql conexaoSql = new ConexaoSql();
+    JdbcTemplate conSQL = conexaoSql.getConexaosql();
     private Double limiteCPU;
     private Double limiteRam;
     private Double limiteDisco;
@@ -14,7 +20,7 @@ public class Limite {
     public Limite(Integer idMaquina) {
         try {
             String sql = "SELECT limiteCpu, limiteRam,limiteDisco FROM limitador WHERE fkMaquina = ?";
-            conec.queryForObject(sql, new Object[]{idMaquina}, (resposta, indice) -> {
+            conSQL.queryForObject(sql, new Object[]{idMaquina}, (resposta, indice) -> {
                 this.limiteCPU = resposta.getDouble(1);
                 this.limiteRam = resposta.getDouble(2);
                 this.limiteDisco = resposta.getDouble(3);

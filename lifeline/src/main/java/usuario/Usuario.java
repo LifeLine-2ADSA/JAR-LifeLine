@@ -1,14 +1,18 @@
 package usuario;
 
+import Logs.Logger;
 import conexao.Conexao;
+import conexao.ConexaoSql;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class Usuario {
     //Instancias
     Conexao conectar = new Conexao();
     JdbcTemplate con = conectar.getConexao();
-
+    ConexaoSql conexaoSql = new ConexaoSql();
+    JdbcTemplate conSQL = conexaoSql.getConexaosql();
     //Atributos
     private Integer idUsuario;
     private String nome;
@@ -24,7 +28,7 @@ public class Usuario {
     public Usuario(String email, String senha) {
         try {
             String sql = "SELECT * FROM usuario WHERE email = ? AND senha = ?";
-            con.queryForObject(sql, new Object[]{email, senha}, (resposta, indice) -> {
+            conSQL.queryForObject(sql, new Object[]{email, senha}, (resposta, indice) -> {
                 this.idUsuario = resposta.getInt(1);
                 this.nome = resposta.getString(2);
                 this.endereco = resposta.getString(3);
@@ -39,6 +43,10 @@ public class Usuario {
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Email ou senha incorretos, tente novamente...");
         }
+//        catch (CannotGetJdbcConnectionException eSQL){
+//            Logger.escreverLogExceptions("Não foi possivel estabelecer conexão na linha %s da Classe %s: %s"
+//                    .formatted(Logger.getNumeroDaLinha(), Logger.getNomeDaClasse(eSQL),eSQL));
+//        }
 
     }
 

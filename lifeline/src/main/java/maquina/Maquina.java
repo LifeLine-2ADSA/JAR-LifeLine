@@ -1,9 +1,11 @@
 package maquina;
 
+import Logs.Logger;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import com.sun.tools.jconsole.JConsoleContext;
 import conexao.Conexao;
+import conexao.ConexaoSql;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -17,7 +19,8 @@ public class Maquina {
     Conexao conectar = new Conexao();
     JdbcTemplate conec = conectar.getConexao();
     Looca looca = new Looca();
-
+    ConexaoSql conexaoSQL = new ConexaoSql();
+    JdbcTemplate conSQL = conexaoSQL.getConexaosql();
     private Integer idMaquina;
     private String nomeMaquina;
     private String hostname;
@@ -29,7 +32,6 @@ public class Maquina {
 
     private void coletarDadosMaquina() {
         List<RedeInterface> listaRede = looca.getRede().getGrupoDeInterfaces().getInterfaces().stream().filter(redeInterface -> !redeInterface.getEnderecoIpv4().isEmpty()).toList();
-
         this.hostname = looca.getRede().getParametros().getHostName();
         this.ip = listaRede.get(0).getEnderecoIpv4().get(0);
         this.sistemaOperacional = looca.getSistema().getSistemaOperacional();
@@ -41,7 +43,7 @@ public class Maquina {
     private Integer escolhaMaquinas(Integer idUsuario) {
         try {
             // Procura maquinas com MAC Address nula com nome no banco
-            List<Maquina> listaMaquinas = conec.query("SELECT m.idMaquina, m.nomeMaquina, m.hostname, m.ip, m.sistemaOperacional, m.maxCpu, m.maxRam, m.maxDisco FROM maquina m WHERE fkUsuario = ? AND hostname = hostname IS NULL", new BeanPropertyRowMapper<>(Maquina.class), idUsuario);
+            List<Maquina> listaMaquinas = conSQL.query("SELECT m.idMaquina, m.nomeMaquina, m.hostname, m.ip, m.sistemaOperacional, m.maxCpu, m.maxRam, m.maxDisco FROM maquina m WHERE fkUsuario = ? AND hostname IS NULL", new BeanPropertyRowMapper<>(Maquina.class), idUsuario);
 
             // Caso exista maquinas sem atributos recurso com nome
             if (!listaMaquinas.isEmpty()) {
@@ -64,7 +66,7 @@ public class Maquina {
                     *------------------------------------*
                     |Error: Cadastre uma máquina no site!|
                     *------------------------------------*
-                        """);
+                    """);
             }
         } catch (EmptyResultDataAccessException e) {
             // Caso não exista maquinas sem atributos recurso com nome
@@ -79,10 +81,10 @@ public class Maquina {
             try {
                 coletarDadosMaquina();
                 // Atualizando atributos de recurso da tabela Maquina
-                conec.update("UPDATE maquina SET ip = ? ,hostname = ?, sistemaOperacional = ?, maxCpu = ?,maxRam = ?,maxDisco = ? WHERE idMaquina = ?", getIp(), getHostname(), getSistemaOperacional(), getMaxCpu(), getMaxRam(), getMaxDisco(), idMaquina);
+                conSQL.update("UPDATE maquina SET ip = ? ,hostname = ?, sistemaOperacional = ?, maxCpu = ?,maxRam = ?,maxDisco = ? WHERE idMaquina = ?", getIp(), getHostname(), getSistemaOperacional(), getMaxCpu(), getMaxRam(), getMaxDisco(), idMaquina);
 
                 // Adicionando limitador referente a tabela Maquina do usuario
-                conec.update("""
+                conSQL.update("""
                         INSERT INTO limitador (fkMaquina, limiteCpu, limiteRam, limiteDisco)
                                             SELECT
                                                 idMaquina,
@@ -93,9 +95,9 @@ public class Maquina {
                         """, idUsuario, hostname);
             } catch (DataAccessException e) {
                 // Erro caso não insira os dados no banco
-                System.out.println(e);
+                Logger.escreverLogExceptions("Ocorreu um erro de inserção na linha %s da Classe %s: %s"
+                        .formatted(Logger.getNumeroDaLinha(), Logger.getNomeDaClasse(e), e));
             }
-
             verificarMaquina(idUsuario);
         }
     }
@@ -104,8 +106,8 @@ public class Maquina {
         coletarDadosMaquina();
         try {
             // Procura maquina no banco pelo MAC Address
-            Integer idMaquina = conec.queryForObject("SELECT idMaquina FROM maquina WHERE fkUsuario = ? AND hostname = ? LIMIT 1"
-                    , Integer.class, idUsuario, hostname);
+            Integer idMaquina = conSQL.queryForObject("SELECT idMaquina FROM maquina WHERE fkUsuario = ? AND hostname = ?"
+                    , Integer.class, idUsuario, this.hostname);
 
             if (idMaquina != null) { // Caso exista o MAC Address no banco
                 this.idMaquina = idMaquina;
