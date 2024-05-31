@@ -5,21 +5,28 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class Conexao {
 
-  private JdbcTemplate conexao;
+    private JdbcTemplate conexao;
 
-  public Conexao() {
-    BasicDataSource data = new BasicDataSource();
-    data.setDriverClassName("com.mysql.cj.jdbc.Driver");
-    data.setUrl("jdbc:mysql://localhost:3306/lifeline");
-//    data.setUsername("lifeline_user");
-//    data.setPassword("urubu100");
-    data.setUsername("root");
-    data.setPassword("215912");
+    public Conexao() {
+        BasicDataSource data = new BasicDataSource();
+        data.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-    conexao = new JdbcTemplate(data);
-  }
+        // Conexao local
+        data.setUrl("jdbc:mysql://localhost:3306/lifeline");
+        data.setUsername("root");
+        data.setPassword("urubu100");
 
-  public JdbcTemplate getConexao() {
-    return conexao;
-  }
+        // Conexao container
+        // Use o nome do serviço 'db' definido no docker-compose.yml como hostname
+//         data.setUrl("jdbc:mysql://db:3306/lifeline");
+//         data.setPassword("urubu100");
+//         data.setUsername("root");
+
+
+        conexao = new JdbcTemplate(data);
+    }
+
+    public JdbcTemplate getConexao() {
+        return conexao;
+    }
 }
