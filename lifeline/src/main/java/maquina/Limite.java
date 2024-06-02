@@ -1,18 +1,15 @@
 package maquina;
 
-import conexao.Conexao;
-import conexao.ConexaoSql;
+import conexao.ConexaoMySQL;
+import conexao.ConexaoSQL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.support.JdbcBeanDefinitionReader;
-
-import javax.swing.*;
 
 public class Limite {
-    Conexao conectar = new Conexao();
-    JdbcTemplate conec = conectar.getConexao();
-    ConexaoSql conexaoSql = new ConexaoSql();
-    JdbcTemplate conSQL = conexaoSql.getConexaosql();
+    ConexaoMySQL conectar = new ConexaoMySQL();
+    JdbcTemplate conMySQL = conectar.getConexao();
+    ConexaoSQL conexaoSQL = new ConexaoSQL();
+    JdbcTemplate conSQL = conexaoSQL.getConexaosql();
     private Double limiteCPU;
     private Double limiteRam;
     private Double limiteDisco;

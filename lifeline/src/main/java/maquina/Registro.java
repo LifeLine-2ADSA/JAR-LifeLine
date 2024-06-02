@@ -1,26 +1,21 @@
 package maquina;
 
 import com.github.britooo.looca.api.core.Looca;
-import com.github.britooo.looca.api.group.janelas.Janela;
-import com.github.britooo.looca.api.group.processos.Processo;
-import com.github.britooo.looca.api.group.rede.RedeInterface;
-import conexao.Conexao;
-import conexao.ConexaoSql;
+import conexao.ConexaoMySQL;
+import conexao.ConexaoSQL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.sql.SQLOutput;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class Registro {
-    Conexao conectar = new Conexao();
-    JdbcTemplate conec = conectar.getConexao();
-    ConexaoSql conexaoSQL = new ConexaoSql();
+    ConexaoMySQL conectar = new ConexaoMySQL();
+    JdbcTemplate conMySQL = conectar.getConexao();
+    ConexaoSQL conexaoSQL = new ConexaoSQL();
     JdbcTemplate conSQL = conexaoSQL.getConexaosql();
     Looca looca = new Looca();
     private Timer permanenciaDeDados;
@@ -73,14 +68,16 @@ public class Registro {
                     public void run() {
                         Date data = new Date(); // data da coleta
                         // insert ao banco
-//                        conec.update("""
-//                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
-//                                """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(),getNomeJanela(),getTemperatura()
-//                                );
+                        conMySQL.update("""
+                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
+                                """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(),getNomeJanela(),getTemperatura()
+                                );
+
                         conSQL.update("""
                                 INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
                                 """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(),getNomeJanela(),getTemperatura()
                         );
+
                         System.out.println("""
                     *------------------------------------*
                     |           Dados Coletados          |
@@ -113,7 +110,7 @@ public class Registro {
                     Integer fkRegistro = conSQL.queryForObject("SELECT TOP 1 idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC", Integer.class, idMaquina);
 
                     // Insert do alerta
-                    // conec.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
+                    conMySQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
                     conSQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
 
                     System.out.println("""

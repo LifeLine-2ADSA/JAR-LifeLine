@@ -1,20 +1,7 @@
 import Logs.Logger;
-import com.github.britooo.looca.api.core.Looca;
-import com.github.britooo.looca.api.group.janelas.Janela;
-import com.github.britooo.looca.api.group.janelas.JanelaGrupo;
-import com.github.britooo.looca.api.group.processos.Processo;
-import conexao.Conexao;
-import conexao.ConexaoSql;
-import maquina.Conversor;
-import maquina.Limite;
+import conexao.ConexaoSQL;
 import maquina.Maquina;
-import maquina.Registro;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import usuario.Usuario;
-
-import java.util.List;
 
 
 public class Teste {
@@ -31,6 +18,13 @@ public class Teste {
     //Construtor
 
     public static void main(String[] args) {
+
+        // PULANDO LOGIN
+//        Usuario usuario = new Usuario("joao@techinnovations.com", "senha123");
+//        Maquina maquina = new Maquina();
+//
+//        maquina.verificarMaquina(usuario.getIdUsuario());
+
         try {
             for (int i = 0; i < 5; i++) {
                 Logger.escreverLogSucesso("10 dividido por %d é ".formatted(i) + 10/i);
@@ -39,7 +33,7 @@ public class Teste {
             Logger.escreverLogExceptions("Ocorreu o seguinte erro na linha %s da Classe %s: %s"
                     .formatted(Logger.getNumeroDaLinha(), Logger.getNomeDaClasse(e), e));
         }
-        ConexaoSql conexaoSQL = new ConexaoSql();
+        ConexaoSQL conexaoSQL = new ConexaoSQL();
         JdbcTemplate conSQL = conexaoSQL.getConexaosql();
         Maquina maquina = new Maquina();
         System.out.println(maquina.getHostname());
@@ -92,10 +86,5 @@ public class Teste {
 
 //        System.out.println(looca.getTemperatura().getTemperatura().doubleValue());
 
-        // PULANDO LOGIN
-//        Usuario usuario = new Usuario("joao@techinnovations.com", "senha123");
-//        Maquina maquina = new Maquina();
-//
-//        maquina.verificarMaquina(usuario.getIdUsuario());
     }
 }

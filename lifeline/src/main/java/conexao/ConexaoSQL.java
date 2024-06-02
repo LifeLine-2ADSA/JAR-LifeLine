@@ -3,16 +3,14 @@ package conexao;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class ConexaoSql {
+public class ConexaoSQL {
 
     private JdbcTemplate conexaosql;
 
-    public ConexaoSql(){
+    public ConexaoSQL(){
         BasicDataSource dataSource = new BasicDataSource();
 
         dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-
-
 
         dataSource.setUrl("jdbc:sqlserver://100.27.91.182:1433;" +
                 "database=lifeline;" +

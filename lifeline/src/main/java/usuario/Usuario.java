@@ -1,17 +1,15 @@
 package usuario;
 
-import Logs.Logger;
-import conexao.Conexao;
-import conexao.ConexaoSql;
+import conexao.ConexaoMySQL;
+import conexao.ConexaoSQL;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class Usuario {
     //Instancias
-    Conexao conectar = new Conexao();
+    ConexaoMySQL conectar = new ConexaoMySQL();
     JdbcTemplate con = conectar.getConexao();
-    ConexaoSql conexaoSql = new ConexaoSql();
+    ConexaoSQL conexaoSql = new ConexaoSQL();
     JdbcTemplate conSQL = conexaoSql.getConexaosql();
     //Atributos
     private Integer idUsuario;
@@ -25,6 +23,21 @@ public class Usuario {
     private Integer fkEmpresa;
 
     //Construtor
+
+//    public Usuario(Integer idUsuario, String nome, String endereco, String telefone, String cargo, String email, String senha, String cpf, Integer fkEmpresa) {
+//        this.idUsuario = idUsuario;
+//        this.nome = nome;
+//        this.endereco = endereco;
+//        this.telefone = telefone;
+//        this.cargo = cargo;
+//        this.email = email;
+//        this.senha = senha;
+//        this.cpf = cpf;
+//        this.fkEmpresa = fkEmpresa;
+//    }
+    public Usuario(){}
+
+
     public Usuario(String email, String senha) {
         try {
             String sql = "SELECT * FROM usuario WHERE email = ? AND senha = ?";
