@@ -11,7 +11,6 @@ public class ConexaoSQL {
         BasicDataSource dataSource = new BasicDataSource();
 
         dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-
         dataSource.setUrl("jdbc:sqlserver://100.27.91.182:1433;" +
                 "database=lifeline;" +
                 "trustServerCertificate=true;");

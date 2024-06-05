@@ -1,0 +1,1 @@
+02-06-2024 15:44:33 : Ocorreu um erro de inserção na linha 86 da Classe org.springframework.jdbc.datasource.DataSourceUtils: org.springframework.jdbc.CannotGetJdbcConnectionException: Failed to obtain JDBC Connection; nested exception is java.sql.SQLException: Cannot create PoolableConnectionFactory (Access denied for user 'root'@'localhost' (using password: YES))

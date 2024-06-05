@@ -42,7 +42,7 @@ public class Maquina {
     }
 
     private void cadastrarMaquina(Integer idUsuario) {
-        Integer idMaquina = conSQL.queryForObject("SELECT TOP 1 * FROM maquina m WHERE fkUsuario = ? AND hostname IS NULL",new BeanPropertyRowMapper<>(Integer.class), idUsuario);
+        Integer idMaquina = conSQL.queryForObject("SELECT TOP 1 idMaquina FROM maquina WHERE fkUsuario = ? AND hostname IS NULL",Integer.class, idUsuario);
 
             try {
                 // Atualizando atributos de recurso da tabela Maquina

@@ -23,20 +23,7 @@ public class Usuario {
     private Integer fkEmpresa;
 
     //Construtor
-
-//    public Usuario(Integer idUsuario, String nome, String endereco, String telefone, String cargo, String email, String senha, String cpf, Integer fkEmpresa) {
-//        this.idUsuario = idUsuario;
-//        this.nome = nome;
-//        this.endereco = endereco;
-//        this.telefone = telefone;
-//        this.cargo = cargo;
-//        this.email = email;
-//        this.senha = senha;
-//        this.cpf = cpf;
-//        this.fkEmpresa = fkEmpresa;
-//    }
     public Usuario(){}
-
 
     public Usuario(String email, String senha) {
         try {

@@ -107,11 +107,12 @@ public class Registro {
                     // Caso consumo ultrapasse o limite
                     Date data = new Date(); // Data e hora do alerta
                     // Coletando id do registro mais recente
-                    Integer fkRegistro = conSQL.queryForObject("SELECT TOP 1 idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC", Integer.class, idMaquina);
+                    Integer fkRegistroMySQL = conMySQL.queryForObject("SELECT idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC LIMIT 1", Integer.class, idMaquina);
+                    Integer fkRegistroSQL = conSQL.queryForObject("SELECT TOP 1 idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC", Integer.class, idMaquina);
 
                     // Insert do alerta
-                    conMySQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
-                    conSQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistro);
+                    conMySQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistroMySQL);
+                    conSQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistroSQL);
 
                     System.out.println("""
                             ------------------
