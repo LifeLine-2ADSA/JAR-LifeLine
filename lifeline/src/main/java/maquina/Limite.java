@@ -16,7 +16,7 @@ public class Limite {
 
     public Limite(Integer idMaquina) {
         try {
-            String sql = "SELECT limiteCpu, limiteRam,limiteDisco FROM limitador WHERE fkMaquina = ?";
+            String sql = "SELECT TOP 1 limiteCpu, limiteRam,limiteDisco FROM limitador WHERE fkMaquina = ?";
             conSQL.queryForObject(sql, new Object[]{idMaquina}, (resposta, indice) -> {
                 this.limiteCPU = resposta.getDouble(1);
                 this.limiteRam = resposta.getDouble(2);

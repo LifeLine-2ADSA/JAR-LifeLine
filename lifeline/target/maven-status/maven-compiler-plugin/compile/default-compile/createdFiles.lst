@@ -2,9 +2,11 @@ maquina\Limite.class
 maquina\Registro$1.class
 maquina\Registro.class
 maquina\Maquina.class
-conexao\Conexao.class
 maquina\Conversor.class
 App.class
 Teste.class
+conexao\ConexaoMySQL.class
+conexao\ConexaoSQL.class
+maquina\ProcessInfo.class
 usuario\Usuario.class
-conexao\ConexaoSql.class
+Logs\Logger.class

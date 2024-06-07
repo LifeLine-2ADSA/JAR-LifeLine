@@ -2,17 +2,19 @@ package usuario;
 
 import conexao.ConexaoMySQL;
 import conexao.ConexaoSQL;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class Usuario {
     //Instancias
     ConexaoMySQL conectar = new ConexaoMySQL();
-    JdbcTemplate con = conectar.getConexao();
+    JdbcTemplate conMySQL = conectar.getConexao();
     ConexaoSQL conexaoSql = new ConexaoSQL();
     JdbcTemplate conSQL = conexaoSql.getConexaosql();
     //Atributos
-    private Integer idUsuario;
+    private Integer idUsuarioSQL;
+    private Integer idUsuarioMySQL;
     private String nome;
     private String endereco;
     private String telefone;
@@ -23,13 +25,11 @@ public class Usuario {
     private Integer fkEmpresa;
 
     //Construtor
-    public Usuario(){}
-
     public Usuario(String email, String senha) {
         try {
             String sql = "SELECT * FROM usuario WHERE email = ? AND senha = ?";
             conSQL.queryForObject(sql, new Object[]{email, senha}, (resposta, indice) -> {
-                this.idUsuario = resposta.getInt(1);
+                this.idUsuarioSQL = resposta.getInt(1);
                 this.nome = resposta.getString(2);
                 this.endereco = resposta.getString(3);
                 this.telefone = resposta.getString(4);
@@ -43,15 +43,33 @@ public class Usuario {
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Email ou senha incorretos, tente novamente...");
         }
-//        catch (CannotGetJdbcConnectionException eSQL){
-//            Logger.escreverLogExceptions("Não foi possivel estabelecer conexão na linha %s da Classe %s: %s"
-//                    .formatted(Logger.getNumeroDaLinha(), Logger.getNomeDaClasse(eSQL),eSQL));
-//        }
 
+        try {
+            Integer id = conMySQL.queryForObject("SELECT idUsuario FROM usuario WHERE email = ? AND senha = ? LIMIT 1", Integer.class, email, senha); // coletando id do usuario no banco
+            this.idUsuarioMySQL = id;
+        } catch (EmptyResultDataAccessException e) {
+            Integer id = inserirUsuarioMySQL();
+            this.idUsuarioMySQL = id;
+        }
     }
 
-    public Integer getIdUsuario() {
-        return idUsuario;
+    private Integer inserirUsuarioMySQL() {
+        try {
+            conMySQL.update("INSERT INTO usuario(nome, endereco, telefone, cargo, senha, email, cpf) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        getNome(), getEndereco(), getTelefone(), getCargo(), getSenha(), getEmail(), getCpf());
+            return conMySQL.queryForObject("SELECT idUsuario FROM usuario WHERE email = ? AND senha = ? LIMIT 1", Integer.class, email, senha);
+        } catch (DataAccessException d) {
+                System.out.println("Não foi possivel inserir o usuário no bando de dados local");
+                return null;
+        }
+    }
+
+    public Integer getIdUsuarioSQL() {
+        return idUsuarioSQL;
+    }
+
+    public Integer getIdUsuarioMySQL() {
+        return idUsuarioMySQL;
     }
 
     public String getNome() {
@@ -88,17 +106,17 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return """
-                id: %d
-                nome: %s
-                endereco: %s
-                telefone: %s
-                cargo: %s
-                email: %s
-                senha: %s
-                cpf: %s
-                fkEmpresa: %d
-                """.formatted(idUsuario, nome, endereco, telefone, cargo, email, senha, cpf, fkEmpresa);
+        return "Usuario{" +
+                "idUsuarioSQL=" + idUsuarioSQL +
+                ", idUsuarioMySQL=" + idUsuarioMySQL +
+                ", nome='" + nome + '\'' +
+                ", endereco='" + endereco + '\'' +
+                ", telefone='" + telefone + '\'' +
+                ", cargo='" + cargo + '\'' +
+                ", email='" + email + '\'' +
+                ", senha='" + senha + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", fkEmpresa=" + fkEmpresa +
+                '}';
     }
-
 }

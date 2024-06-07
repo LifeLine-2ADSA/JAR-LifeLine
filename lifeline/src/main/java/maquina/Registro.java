@@ -34,7 +34,7 @@ public class Registro {
 
 //        Processo processoMaisConsome = looca.getGrupoDeProcessos().getProcessos().get(0);
 //        for (Processo processo : looca.getGrupoDeProcessos().getProcessos()) {
-//            if (processoMaisConsome.getBytesUtilizados() < processo.getBytesUtilizados()) {
+//            if (processoMaisConsome.getBytesUtilizados() < pocesso.getBytesUtilizados()) {
 //                processoMaisConsome = processo;
 //            }
 //        }
@@ -52,52 +52,61 @@ public class Registro {
             System.out.println("Falha ao obter informações do processo.");
             this.nomeJanela = "Janela não encontrada";
         }
+
         this.temperatura = looca.getTemperatura().getTemperatura().doubleValue();
         this.permanenciaDeDados = new Timer();
-        this.consumoCPU = Conversor.converterDoubleDoisDecimais(looca.getProcessador().getUso());
+
+        Double maxCPU = Conversor.converterFrequencia(looca.getProcessador().getFrequencia());
+        Double consumoCPU = Conversor.converterDoubleDoisDecimais(looca.getProcessador().getUso());
+        this.consumoCPU = maxCPU <= consumoCPU ? maxCPU : consumoCPU;
+
         this.consumoRam = Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getMemoria().getEmUso()));
         this.consumoDisco = disco;
     }
 
-    public void inserirRegistros(Integer idMaquina, Limite trigger) {
+    public void inserirRegistros(Integer idMaquinaSQL, Integer idMaquinaMySQL, Limite trigger) {
 
         try {
-            // Loop para registrar o dados do recurso ao banco
-                permanenciaDeDados.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Date data = new Date(); // data da coleta
-                        // insert ao banco
-                        conMySQL.update("""
-                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
-                                """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(),getNomeJanela(),getTemperatura()
-                                );
+            // coletar o timer para permanencia de dados
+//            Integer interval = conSQL.queryForObject("SELECT timer FROM maquina WHERE idMaquina = ?", Integer.class, idMaquina);
+            Integer interval = 10 * 1000;
 
-                        conSQL.update("""
-                                INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
-                                """, new Timestamp(data.getTime()), idMaquina, getConsumoCPU(),getConsumoRam(), getConsumoDisco(),getNomeJanela(),getTemperatura()
-                        );
+            permanenciaDeDados.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Date data = new Date(); // data da coleta
+                    // insert ao banco
+                    conMySQL.update("""
+                        INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
+                        """, new Timestamp(data.getTime()), idMaquinaMySQL, getConsumoCPU(), getConsumoRam(), getConsumoDisco(), getNomeJanela(), getTemperatura()
+                    );
 
-                        System.out.println("""
-                    *------------------------------------*
-                    |           Dados Coletados          |
-                    *------------------------------------*
-                    |Consumo da CPU: %.2f
-                    |Consumo da RAM: %.2f
-                    |Consumo da Disco: %.2f
-                    |Nome da Janela: %s
-                    |Temperatura: %.1f
-                    *------------------------------------*
-                                """.formatted(getConsumoCPU(), getConsumoRam(),getConsumoDisco(),getNomeJanela(),getTemperatura()));
-                        triggerRegistro(idMaquina, trigger); // Pos inserção de registro dos volateis
-                    }
-                },0, 50000);
+                    conSQL.update("""
+                        INSERT INTO registro(dataHora, fkMaquina, consumoCpu, consumoRam, consumoDisco, nomeJanela, temperatura) VALUES (?, ?, ?, ?, ?, ?, ?)
+                        """, new Timestamp(data.getTime()), idMaquinaSQL, getConsumoCPU(), getConsumoRam(), getConsumoDisco(), getNomeJanela(), getTemperatura()
+                    );
+
+                    System.out.println("""
+                *------------------------------------*
+                |           Dados Coletados          |
+                *------------------------------------*
+                |Consumo da CPU: %.2f
+                |Consumo da RAM: %.2f
+                |Consumo da Disco: %.2f
+                |Nome da Janela: %s
+                |Temperatura: %.1f
+                *------------------------------------*
+                        """.formatted(getConsumoCPU(), getConsumoRam(), getConsumoDisco(), getNomeJanela(), getTemperatura()));
+
+                    triggerRegistro(idMaquinaSQL, idMaquinaMySQL, trigger); // Pós inserção de registro dos voláteis
+                }
+            }, interval, interval);
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Não foi encontrada nenhuma máquina vinculada a este usuário");
         }
     }
 
-    private void triggerRegistro(Integer idMaquina, Limite trigger) {
+    private void triggerRegistro(Integer idMaquinaSQL,Integer idMaquinaMySQL, Limite trigger) {
         try {
                 // Comparando limite com o consumo
                 if ( trigger.getLimiteCPU() < consumoCPU ||
@@ -107,8 +116,8 @@ public class Registro {
                     // Caso consumo ultrapasse o limite
                     Date data = new Date(); // Data e hora do alerta
                     // Coletando id do registro mais recente
-                    Integer fkRegistroMySQL = conMySQL.queryForObject("SELECT idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC LIMIT 1", Integer.class, idMaquina);
-                    Integer fkRegistroSQL = conSQL.queryForObject("SELECT TOP 1 idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC", Integer.class, idMaquina);
+                    Integer fkRegistroMySQL = conMySQL.queryForObject("SELECT idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC LIMIT 1", Integer.class, idMaquinaMySQL);
+                    Integer fkRegistroSQL = conSQL.queryForObject("SELECT TOP 1 idRegistro FROM registro WHERE fkMaquina = ? ORDER BY idRegistro DESC", Integer.class, idMaquinaSQL);
 
                     // Insert do alerta
                     conMySQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistroMySQL);
