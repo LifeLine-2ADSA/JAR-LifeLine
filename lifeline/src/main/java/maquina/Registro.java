@@ -1,10 +1,11 @@
 package maquina;
 
 import com.github.britooo.looca.api.core.Looca;
-import conexao.ConexaoMySQL;
-import conexao.ConexaoSQL;
+import service.ConexaoMySQL;
+import service.ConexaoSQL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import service.Conversor;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -16,7 +17,7 @@ public class Registro {
     ConexaoMySQL conectar = new ConexaoMySQL();
     JdbcTemplate conMySQL = conectar.getConexao();
     ConexaoSQL conexaoSQL = new ConexaoSQL();
-    JdbcTemplate conSQL = conexaoSQL.getConexaosql();
+    JdbcTemplate conSQL = conexaoSQL.getConexao();
     Looca looca = new Looca();
     private Timer permanenciaDeDados;
     private Double consumoCPU;

@@ -1,7 +1,7 @@
 package usuario;
 
-import conexao.ConexaoMySQL;
-import conexao.ConexaoSQL;
+import service.ConexaoMySQL;
+import service.ConexaoSQL;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +11,7 @@ public class Usuario {
     ConexaoMySQL conectar = new ConexaoMySQL();
     JdbcTemplate conMySQL = conectar.getConexao();
     ConexaoSQL conexaoSql = new ConexaoSQL();
-    JdbcTemplate conSQL = conexaoSql.getConexaosql();
+    JdbcTemplate conSQL = conexaoSql.getConexao();
     //Atributos
     private Integer idUsuarioSQL;
     private Integer idUsuarioMySQL;

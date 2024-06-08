@@ -1,18 +1,12 @@
 package maquina;
 
-import Logs.Logger;
+import service.*;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
-import conexao.ConexaoMySQL;
-import conexao.ConexaoSQL;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import usuario.Usuario;
 
 import java.util.List;
-import java.util.Scanner;
 
 public class Maquina {
     ConexaoMySQL conectar = new ConexaoMySQL();
@@ -21,8 +15,8 @@ public class Maquina {
     Looca looca = new Looca();
 
     ConexaoSQL conexaoSQL = new ConexaoSQL();
-    JdbcTemplate conSQL = conexaoSQL.getConexaosql();
-
+    JdbcTemplate conSQL = conexaoSQL.getConexao();
+    Logger log = new Logger();
     private Integer idMaquinaSQL;
     private Integer idMaquinaMySQL;
     private String nomeMaquina;
@@ -73,8 +67,8 @@ public class Maquina {
             return conSQL.queryForObject("SELECT TOP 1 idMaquina FROM maquina WHERE fkUsuario = ? AND hostname IS NULL",Integer.class, idUsuarioSQL);
         } catch (DataAccessException e) {
             // Erro caso não insira os dados no banco
-            Logger.escreverLogExceptions("Ocorreu um erro de inserção na linha %s da Classe %s: %s"
-                    .formatted(Logger.getNumeroDaLinha(), Logger.getNomeDaClasse(e), e));
+//            log.escreverLog("Ocorreu um erro de inserção na linha %s da Classe %s: %s"
+//                    .formatted(log.getNumeroDaLinha(), log.getNomeDaClasse(e), e), TipoLog.EXCEPTION);
             return null;
         }
     }
