@@ -14,7 +14,7 @@ public class ConexaoMySQL {
         // Conexao local
         data.setUrl("jdbc:mysql://localhost:3306/lifeline");
         data.setUsername("root");
-        data.setPassword("215912");
+        data.setPassword("urubu100");
 
         // Conexao container
         // Use o nome do serviço 'db' definido no docker-compose.yml como hostname
