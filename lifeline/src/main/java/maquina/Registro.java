@@ -1,12 +1,18 @@
 package maquina;
 
 import com.github.britooo.looca.api.core.Looca;
+import org.json.JSONObject;
 import service.ConexaoMySQL;
 import service.ConexaoSQL;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import service.Conversor;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Timer;
@@ -25,6 +31,7 @@ public class Registro {
     private Double consumoDisco;
     private Double temperatura;
     private String nomeJanela;
+    private String hostname;
 
     //Construtor
     public Registro() {
@@ -63,6 +70,7 @@ public class Registro {
 
         this.consumoRam = Conversor.converterDoubleTresDecimais(Conversor.formatarBytes(looca.getMemoria().getEmUso()));
         this.consumoDisco = disco;
+        this.hostname = looca.getRede().getParametros().getHostName();
     }
 
     public void inserirRegistros(Integer idMaquinaSQL, Integer idMaquinaMySQL, Limite trigger) {
@@ -129,11 +137,61 @@ public class Registro {
                             ALERTEI!!!!!!!!!!!
                             ------------------
                             """);
+
+                    enviarAlertaSlack(); // Envia alerta para o Slack
+
                 }
         } catch (EmptyResultDataAccessException e) {
             System.out.println("Erro no insert do trigger");
         }
     }
+
+
+    private void enviarAlertaSlack() {
+        try {
+            // Montando o conteúdo da mensagem
+            JSONObject json = new JSONObject();
+            json.put("text", """
+                            *------------------------------------*
+                            |  A maquina: %s está em ALERTA!     |
+                            *------------------------------------*
+                            |Consumo da CPU: %.2f
+                            |Consumo da RAM: %.2f
+                            |Consumo da Disco: %.2f
+                            |Nome da Janela: %s
+                            |Temperatura: %.1f
+                            *------------------------------------*
+                            """.formatted(getHostname(), getConsumoCPU(), getConsumoRam(), getConsumoDisco(), getNomeJanela(), getTemperatura()));
+
+            // Enviando mensagem para o Slack
+            Slack.sendMessage(json);
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Erro ao enviar alerta para o Slack: " + e.getMessage());
+        }
+    }
+
+
+
+
+    static class Slack {
+        private static HttpClient client = HttpClient.newHttpClient();
+        private static final String URL = "https://hooks.slack.com/services/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";
+
+        static void sendMessage(JSONObject content) throws IOException, InterruptedException {
+            HttpRequest request = HttpRequest.newBuilder(
+                            URI.create(URL))
+                    .header("accept", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(content.toString()))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            System.out.println(String.format("Status: %s", response.statusCode()));
+            System.out.println(String.format("Response: %s", response.body()));
+        }
+    }
+
+
 
     public Double getConsumoCPU() {
         return consumoCPU;
@@ -153,6 +211,14 @@ public class Registro {
 
     public String getNomeJanela() {
         return nomeJanela;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 
     @Override
