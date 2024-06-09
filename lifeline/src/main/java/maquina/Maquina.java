@@ -119,8 +119,7 @@ private Integer pegarIdMaquinaSQL(Integer idUsuarioSQL) {
             return idMaquina;
         } catch (DataAccessException e) {
             // Log de erro caso não insira os dados no banco
-//            log.escreverLog("Ocorreu um erro de inserção na linha %s da Classe %s: %s"
-//                    .formatted(log.getNumeroDaLinha(), log.getNomeDaClasse(e), e), TipoLog.EXCEPTION);
+            Logger.escreverLog(e.toString(), TipoLog.EXCEPTION);
             return null;
         }
     }
