@@ -1,5 +1,6 @@
 maquina\Registro$1.class
 maquina\Maquina.class
+maquina\Registro$Slack.class
 service\Conversor.class
 service\ConexaoMySQL.class
 App.class

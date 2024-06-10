@@ -9,15 +9,15 @@ public class ConexaoMySQL extends Conexao {
         data.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         // Conexao local
-//        data.setUrl("jdbc:mysql://localhost:3306/lifeline");
-//        data.setUsername("root");
-//        data.setPassword("urubu100");
+        data.setUrl("jdbc:mysql://localhost:3306/lifeline");
+        data.setUsername("root");
+        data.setPassword("45115647");
 
         // Conexao container
         // Use o nome do serviço 'db' definido no docker-compose.yml como hostname
-         data.setUrl("jdbc:mysql://db:3306/lifeline");
-         data.setPassword("urubu100");
-         data.setUsername("root");
+//         data.setUrl("jdbc:mysql://db:3306/lifeline");
+//         data.setPassword("urubu100");
+//         data.setUsername("root");
 
 
         conexao = new JdbcTemplate(data);

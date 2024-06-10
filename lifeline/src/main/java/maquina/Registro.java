@@ -99,11 +99,11 @@ public class Registro {
                 *------------------------------------*
                 |           Dados Coletados          |
                 *------------------------------------*
-                |Consumo da CPU: %.2f
-                |Consumo da RAM: %.2f
-                |Consumo da Disco: %.2f
+                |Consumo da CPU: %.2f GHz
+                |Consumo da RAM: %.2f Gb
+                |Consumo da Disco: %.2f Gb
                 |Nome da Janela: %s
-                |Temperatura: %.1f
+                |Temperatura: %.1f °C
                 *------------------------------------*
                         """.formatted(getConsumoCPU(), getConsumoRam(), getConsumoDisco(), getNomeJanela(), getTemperatura()));
 
@@ -132,11 +132,6 @@ public class Registro {
                     conMySQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistroMySQL);
                     conSQL.update("INSERT INTO alerta(dataAlerta, fkRegistro) VALUES (?, ?)", new Timestamp(data.getTime()), fkRegistroSQL);
 
-                    System.out.println("""
-                            ------------------
-                            ALERTEI!!!!!!!!!!!
-                            ------------------
-                            """);
 
                     enviarAlertaSlack(); // Envia alerta para o Slack
 
@@ -155,11 +150,11 @@ public class Registro {
                             *------------------------------------*
                             |  A maquina: %s está em ALERTA!     |
                             *------------------------------------*
-                            |Consumo da CPU: %.2f
-                            |Consumo da RAM: %.2f
-                            |Consumo da Disco: %.2f
+                            |Consumo da CPU: %.2f GHz
+                            |Consumo da RAM: %.2f Gb
+                            |Consumo da Disco: %.2f Gb
                             |Nome da Janela: %s
-                            |Temperatura: %.1f
+                            |Temperatura: %.1f °C
                             *------------------------------------*
                             """.formatted(getHostname(), getConsumoCPU(), getConsumoRam(), getConsumoDisco(), getNomeJanela(), getTemperatura()));
 
@@ -175,7 +170,7 @@ public class Registro {
 
     static class Slack {
         private static HttpClient client = HttpClient.newHttpClient();
-        private static final String URL = "https://hooks.slack.com/services/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";
+        private static final String URL = "https://hooks.slack.com/services/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";
 
         static void sendMessage(JSONObject content) throws IOException, InterruptedException {
             HttpRequest request = HttpRequest.newBuilder(
